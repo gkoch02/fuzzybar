@@ -15,7 +15,7 @@ builds natively for Apple Silicon, and has no dependencies.
 
 ## Features
 
-- Time in words in the menubar, updated on the minute
+- Time in words in the menubar, updated when the phrase changes
 - Popover with the exact time, full date, and a month calendar with week numbers
 - Start at login, via the system Login Items list
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
@@ -58,7 +58,11 @@ The logic lives in `Sources/FuzzyBar/FuzzyTime.swift` and is covered by tests:
 
 ```sh
 swift test
+python3 -m unittest discover -s Tests/BuildScriptTests
 ```
+
+Tests cover all daily phrase boundaries, calendar grids, clock scheduling, login
+approval states, and build-script failure handling.
 
 ## Project layout
 
@@ -66,7 +70,7 @@ swift test
 | --- | --- |
 | `Sources/FuzzyBar/FuzzyBarApp.swift` | App entry point and the menubar popover |
 | `Sources/FuzzyBar/FuzzyTime.swift` | Time-to-words conversion |
-| `Sources/FuzzyBar/Clock.swift` | Minute-boundary ticker |
+| `Sources/FuzzyBar/Clock.swift` | Phrase-boundary ticker (minute updates while the popover is open) |
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |
 | `Assets/` | Icon renderer and the generated `.icns` |

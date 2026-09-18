@@ -74,12 +74,7 @@ struct CalendarView: View {
 
     /// Six rows of seven days, starting from the first weekday on/before the 1st.
     private var weeks: [[Date]] {
-        guard let monthStart = cal.date(from: cal.dateComponents([.year, .month], from: shownMonth)),
-              let gridStart = cal.date(from: cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: monthStart))
-        else { return [] }
-        return (0..<6).map { w in
-            (0..<7).compactMap { d in cal.date(byAdding: .day, value: w * 7 + d, to: gridStart) }
-        }
+        CalendarGrid.weeks(containing: shownMonth, calendar: cal)
     }
 
     private func shift(_ months: Int) {

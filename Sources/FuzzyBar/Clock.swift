@@ -1,36 +1,69 @@
-import Foundation
+import AppKit
 import Combine
 
-/// Publishes the current time, ticking on minute boundaries.
+/// Updates at phrase boundaries, or each minute while the popover is visible.
 @MainActor
 final class Clock: ObservableObject {
-    @Published private(set) var now = Date()
+    @Published private(set) var now: Date
     private var timer: Timer?
+    private var observers: [(NotificationCenter, NSObjectProtocol)] = []
+    private var popoverVisible = false
+    private let dateProvider: () -> Date
 
-    init() {
+    init(dateProvider: @escaping () -> Date = Date.init) {
+        self.dateProvider = dateProvider
+        now = dateProvider()
         scheduleNextTick()
-        NotificationCenter.default.addObserver(
-            forName: .NSSystemClockDidChange, object: nil, queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in self?.tick() }
-        }
+        observe(.NSSystemClockDidChange, in: .default)
+        observe(.NSSystemTimeZoneDidChange, in: .default)
+        observe(NSWorkspace.didWakeNotification, in: NSWorkspace.shared.notificationCenter)
+    }
+
+    deinit {
+        timer?.invalidate()
+        for (center, token) in observers { center.removeObserver(token) }
     }
 
     var fuzzy: String { FuzzyTime.phrase(for: now) }
 
-    private func tick() {
-        now = Date()
+    func setPopoverVisible(_ visible: Bool) {
+        popoverVisible = visible
+        refresh()
+    }
+
+    func refresh() {
+        now = dateProvider()
         scheduleNextTick()
     }
 
-    /// Fire just after the next :00 seconds so the menubar text is never stale.
+    private func observe(_ name: Notification.Name, in center: NotificationCenter) {
+        let token = center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.refresh() }
+        }
+        observers.append((center, token))
+    }
+
+    /// Search actual minute boundaries so DST and non-whole-hour time zones work.
+    static func nextTick(after date: Date, popoverVisible: Bool, calendar: Calendar = .current) -> Date {
+        let minuteStart = calendar.dateInterval(of: .minute, for: date)!.start
+        let phrase = FuzzyTime.phrase(for: date, calendar: calendar)
+        for offset in 1...5 {
+            let candidate = minuteStart.addingTimeInterval(Double(offset) * 60)
+            if popoverVisible || FuzzyTime.phrase(for: candidate, calendar: calendar) != phrase {
+                return candidate.addingTimeInterval(0.05)
+            }
+        }
+        return minuteStart.addingTimeInterval(300.05)
+    }
+
     private func scheduleNextTick() {
         timer?.invalidate()
-        let interval = 60 - Date().timeIntervalSince1970.truncatingRemainder(dividingBy: 60) + 0.05
-        let t = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
-            Task { @MainActor in self?.tick() }
+        let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible)
+        let t = Timer(fire: fireDate, interval: 0, repeats: false) { [weak self] _ in
+            Task { @MainActor in self?.refresh() }
         }
-        t.tolerance = 0
+        // Allow coalescing without visibly delaying the minute display.
+        t.tolerance = popoverVisible ? 0.1 : 1
         RunLoop.main.add(t, forMode: .common)
         timer = t
     }
