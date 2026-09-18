@@ -30,7 +30,7 @@ struct SettingsView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Toggle("Start at login", isOn: Binding(
-                    get: { login.isEnabled }, set: { login.setEnabled($0) }
+                    get: { login.isRequested }, set: { login.setEnabled($0) }
                 ))
                 if login.status == .requiresApproval {
                     Text("Approval is needed in System Settings before FuzzyBar can start at login.")

@@ -18,7 +18,8 @@ final class LoginSettings: ObservableObject {
         status = readStatus()
     }
 
-    var isEnabled: Bool { status == .enabled }
+    // The toggle represents the requested registration, including pending approval.
+    var isRequested: Bool { status == .enabled || status == .requiresApproval }
 
     func refresh() { status = readStatus() }
 

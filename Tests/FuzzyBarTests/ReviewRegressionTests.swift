@@ -101,19 +101,41 @@ final class ReviewRegressionTests: XCTestCase {
             status = .notRegistered
         })
         login.setEnabled(true)
-        XCTAssertFalse(login.isEnabled)
+        XCTAssertTrue(login.isRequested)
         XCTAssertEqual(login.status, .requiresApproval)
         XCTAssertNil(login.error)
         status = .enabled
         login.refresh()
-        XCTAssertTrue(login.isEnabled)
+        XCTAssertTrue(login.isRequested)
         status = .requiresApproval
         login.refresh()
-        XCTAssertFalse(login.isEnabled)
+        XCTAssertTrue(login.isRequested)
         XCTAssertEqual(registrations, 1)
         XCTAssertEqual(unregistrations, 0)
         login.setEnabled(false)
         XCTAssertEqual(login.status, .notRegistered)
+        XCTAssertEqual(unregistrations, 1)
+    }
+
+    @MainActor func testPendingRegistrationCanBeCancelledThroughToggle() {
+        var status = SMAppService.Status.notRegistered
+        var registrations = 0
+        var unregistrations = 0
+        let login = LoginSettings(readStatus: { status }, register: {
+            registrations += 1
+            status = .requiresApproval
+        }, unregister: {
+            unregistrations += 1
+            status = .notRegistered
+        })
+        XCTAssertFalse(login.isRequested)
+        login.setEnabled(!login.isRequested)
+        XCTAssertTrue(login.isRequested)
+        XCTAssertEqual(login.status, .requiresApproval)
+        login.setEnabled(!login.isRequested)
+        XCTAssertFalse(login.isRequested)
+        XCTAssertEqual(login.status, .notRegistered)
+        XCTAssertEqual(registrations, 1)
         XCTAssertEqual(unregistrations, 1)
     }
 
@@ -125,7 +147,7 @@ final class ReviewRegressionTests: XCTestCase {
             throw Failure.denied
         })
         login.setEnabled(false)
-        XCTAssertTrue(login.isEnabled)
+        XCTAssertTrue(login.isRequested)
         XCTAssertNotNil(login.error)
         XCTAssertEqual(calls, 1)
     }
