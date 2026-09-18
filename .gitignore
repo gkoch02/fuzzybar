@@ -3,3 +3,10 @@ build/
 *.xcodeproj
 .DS_Store
 Assets/AppIcon-1024.png
+# Never commit signing material
+*.p12
+*.p8
+*.cer
+*.mobileprovision
+*.provisionprofile
+.env

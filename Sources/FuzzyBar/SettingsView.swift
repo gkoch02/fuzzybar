@@ -50,7 +50,7 @@ struct SettingsView: View {
 
             Divider()
 
-            Text("© 2026 GKoch. Made with love and no Rosetta.")
+            Text("© 2026 PlumpBug. Made with love and no Rosetta.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
