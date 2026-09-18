@@ -1,2 +1,15 @@
-# fuzzybar
-Modern Menubar fuzzy clock
+# FuzzyBar
+
+A tiny native macOS menubar clock that shows the time in words ("twenty to nine").
+Click it for the exact time, a calendar, Preferences (start at login) and Quit.
+
+Native Apple Silicon, macOS 14+, no dependencies.
+
+## Build
+
+    ./build.sh            # produces build/FuzzyBar.app
+    ./build.sh --install  # also copies to /Applications and launches it
+
+## Test
+
+    swift test
