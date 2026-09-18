@@ -10,3 +10,4 @@ Assets/AppIcon-1024.png
 *.mobileprovision
 *.provisionprofile
 .env
+Assets/screenshots/

@@ -2,7 +2,9 @@
 
 A tiny native macOS menubar clock that tells the time in words.
 
-> **twenty to nine**
+<p align="center">
+  <img src="Assets/screenshot.png" width="420" alt="FuzzyBar showing “nine o'clock” in the menubar, with its popover open">
+</p>
 
 Click it for the exact time, today's date, a month calendar, and a couple of
 menu items. That's the whole app.
