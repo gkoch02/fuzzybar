@@ -10,9 +10,9 @@ cd "$(dirname "$0")"
 TEAM_ID="FGG98L437R"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
-swift build -c release --arch arm64 2>&1 | grep -v '^\[' || true
-BIN=".build/apple/Products/Release/FuzzyBar"
-[[ -x "$BIN" ]] || BIN=".build/release/FuzzyBar"
+swift build -c release --arch arm64
+BIN="$(swift build -c release --arch arm64 --show-bin-path)/FuzzyBar"
+[[ -x "$BIN" ]] || { echo "Missing built executable: $BIN" >&2; exit 1; }
 
 APP="build/FuzzyBar.app"
 rm -rf "$APP"

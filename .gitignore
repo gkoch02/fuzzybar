@@ -11,3 +11,4 @@ Assets/AppIcon-1024.png
 *.provisionprofile
 .env
 Assets/screenshots/
+__pycache__/

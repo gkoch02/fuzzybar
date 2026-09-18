@@ -2,8 +2,7 @@ import SwiftUI
 import ServiceManagement
 
 struct SettingsView: View {
-    @State private var startAtLogin = SMAppService.mainApp.status == .enabled
-    @State private var error: String?
+    @StateObject private var login = LoginSettings()
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
@@ -30,18 +29,16 @@ struct SettingsView: View {
             Divider()
 
             VStack(alignment: .leading, spacing: 6) {
-                Toggle("Start at login", isOn: $startAtLogin)
-                    .onChange(of: startAtLogin) { _, on in
-                        do {
-                            if on { try SMAppService.mainApp.register() }
-                            else { try SMAppService.mainApp.unregister() }
-                            error = nil
-                        } catch {
-                            self.error = error.localizedDescription
-                            startAtLogin = SMAppService.mainApp.status == .enabled
-                        }
-                    }
-                if let error {
+                Toggle("Start at login", isOn: Binding(
+                    get: { login.isEnabled }, set: { login.setEnabled($0) }
+                ))
+                if login.status == .requiresApproval {
+                    Text("Approval is needed in System Settings before FuzzyBar can start at login.")
+                        .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button("Open Login Items…") { SMAppService.openSystemSettingsLoginItems() }
+                }
+                if let error = login.error {
                     Text(error).font(.caption).foregroundStyle(.red)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -56,6 +53,9 @@ struct SettingsView: View {
         }
         .padding(24)
         .frame(width: 320)
-        .onAppear { startAtLogin = SMAppService.mainApp.status == .enabled }
+        .onAppear { login.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            login.refresh()
+        }
     }
 }

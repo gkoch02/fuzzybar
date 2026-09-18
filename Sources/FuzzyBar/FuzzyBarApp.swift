@@ -8,6 +8,8 @@ struct FuzzyBarApp: App {
     var body: some Scene {
         MenuBarExtra(clock.fuzzy) {
             PopoverView(now: clock.now, openSettings: { openSettings() })
+                .onAppear { clock.setPopoverVisible(true) }
+                .onDisappear { clock.setPopoverVisible(false) }
         }
         .menuBarExtraStyle(.window)
 
