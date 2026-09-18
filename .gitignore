@@ -2,3 +2,4 @@
 build/
 *.xcodeproj
 .DS_Store
+Assets/AppIcon-1024.png

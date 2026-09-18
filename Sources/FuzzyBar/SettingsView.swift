@@ -12,10 +12,9 @@ struct SettingsView: View {
     var body: some View {
         VStack(spacing: 18) {
             VStack(spacing: 6) {
-                Image(systemName: "clock")
-                    .font(.system(size: 44, weight: .light))
-                    .foregroundStyle(Color.accentColor)
-                    .padding(.bottom, 4)
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 80, height: 80)
                 Text("FuzzyBar")
                     .font(.title2).fontWeight(.semibold)
                 Text("Version \(version)")
