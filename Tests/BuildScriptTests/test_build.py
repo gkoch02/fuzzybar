@@ -54,3 +54,21 @@ class BuildScriptTests(unittest.TestCase):
 
     def test_success_uses_reported_binary_path(self):
         self.run_build(fail=False)
+
+
+class XcodeProjectTests(unittest.TestCase):
+    """FuzzyBar.xcodeproj lists source files explicitly. It is generated from
+    project.yml by `xcodegen generate` and committed, so a Swift file added
+    on the SwiftPM side is silently missing from App Store archives until the
+    project is regenerated."""
+
+    def test_every_swift_file_is_in_the_xcode_project(self):
+        root = Path(__file__).resolve().parents[2]
+        pbxproj = (root / "FuzzyBar.xcodeproj/project.pbxproj").read_text()
+        missing = sorted(
+            str(path.relative_to(root))
+            for folder in ("Sources", "Tests/FuzzyBarTests")
+            for path in (root / folder).rglob("*.swift")
+            if path.name not in pbxproj
+        )
+        self.assertEqual(missing, [], "run `xcodegen generate` and commit the project")
