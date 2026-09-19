@@ -78,11 +78,13 @@ the other six are ported from
 | Latin | `viginti ante hora IX p.m.` | Roman-numeral hours; real Latin prepositions. |
 
 <p align="center">
-  <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Five menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
+  <img src="Assets/screenshots/strips/personalities.png" width="432" alt="Seven menubar strips stacked, one per personality, every one at 8:44 am: quarter to nine; quarter to nine am; a quarter ’fore nine of the clock; viertel vor neun; T-15 MINUTES, 0900 HOURS; quarter ’fore, the ninth hour; quadrans ante hora IX a.m.">
 </p>
 
-Five of the seven are in that stack; Classic and German have never had a
-strip of their own.
+All seven are in that stack, shot in one sitting with the rest of the menubar
+hidden, so the difference between any two rows is the personality and nothing
+else. The table above is 8:40 pm because that is what Preferences previews;
+the strips are 8:44 am because that is when they were taken.
 
 There were nine until the store submission, and four of them carried
 franchise names. HAL 9000 and Cthulhu had borrowed only the label, so they

@@ -20,16 +20,11 @@ Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
 for an image. Edit captions here and nowhere else.
 
-PENDING A MAC: the Klingon and Belter personalities were withdrawn and two
-others renamed (fuzzybar#9), so their captures were deleted and the captions
-below rewritten. Nothing new needs shooting. captioned/03-personalities.png
-was rendered before that change, read "NINE PERSONALITIES" over the Klingon
-and Belter strips, and is **deleted rather than left in place**: it is the
-App Store upload, and a stale one there advertises the franchise names #9
-exists to remove. Run this script on a Mac to write it back. The other three
-frames are personality-agnostic and still current, so a partial run
-(`python3 Tools/make_screenshots.py 03-personalities`) is enough to restore
-it, though a full run costs nothing and keeps the set consistent.
+The raws are one sitting: all seven personalities shot at 8:44 am on
+2026-09-19, with the other menubar items hidden, so every strip reads the
+same moment and differs only in the phrase. Reshooting one alone will show,
+because the phrase changes with the clock; retake the set together, and
+crop each to the right 880 px of the bar.
 
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
@@ -62,7 +57,9 @@ HEADLINE = (0xFF, 0xFF, 0xFF)
 # factor each is placed at (relative to the raw's own scale); "fit" means
 # 1, shrunk only if the capture would not fit under the caption. A third
 # element crops the raw to that many points from the top before placing,
-# so menubar strips shot with different amounts of wallpaper line up.
+# so menubar strips shot with different amounts of wallpaper line up. The
+# current raws are the bar and nothing else, so that crop is 33 throughout;
+# asking for more than the raw holds pads it black rather than erroring.
 # `uniform=True` crops every shot to the widest one's width, keeping the right
 # edge (where the menubar icons are) and extending a narrower capture's left
 # edge from its own first column, so strips of different widths come out
@@ -72,8 +69,8 @@ HEADLINE = (0xFF, 0xFF, 0xFF)
 FRAMES = {
     "01-menubar": dict(
         eyebrow="The time, in words",
-        headline="Instead of 8:38, your menubar reads “twenty to nine”.",
-        shots=[("menubar-spoken.png", 2, 120)],
+        headline="Instead of 8:44, your menubar reads “quarter to nine”.",
+        shots=[("menubar-spoken.png", 2.4, 33)],
     ),
     "02-popover": dict(
         eyebrow="Click it",
@@ -84,8 +81,10 @@ FRAMES = {
         eyebrow="Seven personalities",
         headline="Plain spoken English, Classic, Shakespeare, German, "
                  "Mission Control, Eldritch, or Latin.",
-        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-missioncontrol.png", 1.8, 32),
-               ("menubar-eldritch.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
+        shots=[("menubar-spoken.png", 1.35, 32), ("menubar-classic.png", 1.35, 32),
+               ("menubar-shakespeare.png", 1.35, 32), ("menubar-german.png", 1.35, 32),
+               ("menubar-missioncontrol.png", 1.35, 32), ("menubar-eldritch.png", 1.35, 32),
+               ("menubar-latin.png", 1.35, 32)],
         uniform=True,
     ),
     "04-settings": dict(
@@ -99,9 +98,9 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-# Five of the seven: Classic and German have never had a strip of their own.
-STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png",
-          "menubar-missioncontrol.png", "menubar-eldritch.png",
+# All seven, since Classic and German were finally shot.
+STRIPS = ["menubar-spoken.png", "menubar-classic.png", "menubar-shakespeare.png",
+          "menubar-german.png", "menubar-missioncontrol.png", "menubar-eldritch.png",
           "menubar-latin.png"]
 
 
