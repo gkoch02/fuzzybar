@@ -7,8 +7,8 @@
 > "Price FuzzyBar at $0.99 on the Mac App Store", September 18, 2026).
 >
 > The code-side work is done (§0) and a store-signed `.pkg` has been produced from
-> this repo (September 18, 2026). What remains is App Store Connect: the app record,
-> the listing copy in §3–§6, screenshots (§7), and the upload (§8).
+> this repo (September 18, 2026). What remains is App Store Connect: the agreement
+> and app record (§2), the listing copy (§3–§5), screenshots (§6), and the upload (§7).
 
 Everything that has to happen outside the code to get FuzzyBar onto the Mac App
 Store, plus the paste-ready metadata. Conventions follow the Nightdraft and Between
@@ -32,6 +32,14 @@ have their own sizes.
   Two gotchas in the spec: `info:` and `entitlements:` keys would *regenerate*
   `Info.plist` and `FuzzyBar.entitlements`, so both are referenced by build setting
   only; and the test target needs `GENERATE_INFOPLIST_FILE: YES` or signing fails.
+  The project lists source files explicitly, so **every new Swift file needs
+  `xcodegen generate` and a commit of the project**; `Tests/BuildScriptTests`
+  fails until that is done (#4 shipped the personalities without it once).
+- **Open the project, not the package.** Xcode happily opens this folder as a Swift
+  package, and Product → Archive then produces a "Generic Xcode Archive" with no
+  version, no identifier and only a Custom distribution method, because a SwiftPM
+  executable is not an app bundle. Open `FuzzyBar.xcodeproj`, pick the FuzzyBar
+  scheme and My Mac, and archive from there.
 - **Signing** — `DEVELOPMENT_TEAM = FGG98L437R`, `CODE_SIGN_STYLE = Automatic`,
   committed in the project. `xcodebuild ... -allowProvisioningUpdates` registered
   the bundle ID and created the "Mac Team Store Provisioning Profile" and the
@@ -57,37 +65,44 @@ have their own sizes.
   iOS "strip the alpha" rule does not apply here.
 - **Export options** — `ExportOptions.plist`, method `app-store-connect`,
   destination `upload`.
-- **Release checks** — as of September 18, 2026: `swift test` passes,
-  `xcodebuild test` passes through the project, a Release archive builds, and
-  `-exportArchive` produces a `.pkg` signed by `3rd Party Mac Developer Installer:
-  Gregory M Koch (FGG98L437R)` with the store profile embedded. Re-run all four
-  before every submission (§8).
+- **Release checks** — as of September 18, 2026, on `main` after #4: `swift test`,
+  `xcodebuild test` and the build-script suite pass (25 Swift tests, 3 Python), a
+  Release archive builds universal (arm64 + x86_64), and `-exportArchive` produces a
+  `.pkg` signed by `3rd Party Mac Developer Installer: Gregory M Koch (FGG98L437R)`
+  with the store profile embedded. Re-run the three test commands and the two
+  archive commands (§7) before every submission.
 
 ---
 
 ## 1. The pages on plumpbug.dev
 
-Live already, served from the `plumpbug-site` repo at `docs/fuzzybar/`:
+Live since plumpbug-site PR #86 (September 18, 2026), served from that repo's
+`docs/fuzzybar/`. The site's canonical URLs have no extension; the `.html` forms
+redirect (308) to these, so use these in App Store Connect:
 
 | Page | URL |
 | --- | --- |
-| About | <https://plumpbug.dev/fuzzybar/home.html> |
-| Privacy | <https://plumpbug.dev/fuzzybar/privacy.html> |
-| Support | <https://plumpbug.dev/fuzzybar/support.html> |
+| About | <https://plumpbug.dev/fuzzybar/home> |
+| Privacy | <https://plumpbug.dev/fuzzybar/privacy> |
+| Support | <https://plumpbug.dev/fuzzybar/support> |
 
-- [ ] **Update the privacy page before submitting.** It currently says FuzzyBar "has
-      no preferences file" and that start-at-login is "the one setting it has". Once
-      the personality picker (PR #2) is merged, the app stores one preference, the
-      chosen personality, in its own `UserDefaults`, on this Mac only. Say so. The
-      manifest (§0) and the App Privacy answers (§4) already assume it.
-- [ ] **Fix the entitlements sentence on the privacy page.** It says the
-      "hardened-runtime entitlements file is empty because it needs no entitlements".
-      Since #3 the file enables App Sandbox, and a sandboxed store build keeps its
-      preferences at `~/Library/Containers/dev.plumpbug.fuzzybar/Data/Library/Preferences/`
-      rather than `~/Library/Preferences/` (the `build.sh` build, which is not
-      sandboxed, still uses the latter). The data-deletion section names the path.
-- [ ] Load all three URLs after the site deploys. Reviewers open them; a broken
-      privacy URL blocks review.
+All three returned 200 on September 18, 2026. The privacy page already describes
+the personality preference and the $0.99 price matches §3. Two sentences on it are
+now wrong and should be fixed before submitting, since reviewers open the privacy
+URL:
+
+- [ ] **The entitlements sentence.** "Its hardened-runtime entitlements file is
+      empty because it needs no entitlements" predates #3; the file now enables
+      App Sandbox and nothing else. Say that the app runs in the App Sandbox with no
+      other entitlements, which is the stronger claim anyway.
+- [ ] **The preferences path.** The page names
+      `~/Library/Preferences/dev.plumpbug.fuzzybar.plist`. That is where the
+      unsandboxed `build.sh` build writes; the store build is sandboxed and writes to
+      `~/Library/Containers/dev.plumpbug.fuzzybar/Data/Library/Preferences/dev.plumpbug.fuzzybar.plist`.
+      The "What the app stores" and "Data deletion" sections both name the path.
+- The pages say "built for Apple Silicon" because `build.sh` is arm64-only. The
+  store build is universal, which the description in §3 says. Both are true; leave
+  the site alone unless the direct-download build changes.
 
 ---
 
@@ -161,12 +176,13 @@ Requires macOS 14 Sonoma or later. Open source under the MIT license.
 
 **What's New** (1.0) — `First release.`
 
-**Price** — Tier 1, **$0.99 USD**, with Apple's automatic equivalents elsewhere.
+**Price** — the **$0.99 USD** price point (the lowest paid one), with Apple's
+automatic equivalents elsewhere.
 Availability: all storefronts except any deselected under EU trader status (§2).
 No introductory offers, no IAP.
 
 **Version** `1.0` · **Build** `1` (from `Info.plist`; bump both there and in
-`project.yml` together).
+`project.yml` together, then `xcodegen generate` and commit the project).
 
 ---
 
@@ -230,7 +246,8 @@ it is a Retina capture of a 1440×900 area and downscales cleanly.
 ## 7. Order of operations
 
 1. Merge the code, bump version and build in `Info.plist` and `project.yml` if this
-   is not the first upload, and run the four release checks:
+   is not the first upload (then `xcodegen generate`), and run the three test
+   suites:
 
    ```sh
    swift test
@@ -252,9 +269,12 @@ it is a Retina capture of a 1440×900 area and downscales cleanly.
      -allowProvisioningUpdates
    ```
 
-   Or open the archive in Xcode's Organizer and click Distribute App → App Store
-   Connect → Upload; it is the same signing path. Either way needs Xcode signed
-   in to the account.
+   Or in Xcode: open **`FuzzyBar.xcodeproj`** (not the folder or `Package.swift`,
+   see §0), scheme FuzzyBar, destination My Mac, Product → Archive, then in the
+   Organizer: Distribute App → App Store Connect → Upload. It is the same signing
+   path. Either way needs Xcode signed in to the account. If the Organizer shows
+   the archive as "Generic Xcode Archive" with only a Custom method, the package
+   was archived instead of the project.
 
 3. Wait for the build to process (email arrives), then in App Store Connect attach
    it to the 1.0 version, fill §3–§5, add screenshots, and Submit for Review.
@@ -270,7 +290,8 @@ it is a Retina capture of a 1440×900 area and downscales cleanly.
 - The bundle ID, the `UserDefaults` keys (`personality`), and `LSMinimumSystemVersion`
   become load-bearing against installs on other people's Macs.
 - Updates: bump `CFBundleShortVersionString` and `CFBundleVersion` in `Info.plist`
-  and the matching two lines in `project.yml`, run the release checks, archive, upload.
+  and the matching two lines in `project.yml`, run `xcodegen generate`, run the
+  release checks, archive, upload.
 - `build.sh` keeps producing the ad-hoc-signed direct-download build; the store
   build and the local build are the same code and the same bundle ID, so one replaces
   the other in `/Applications` cleanly.
