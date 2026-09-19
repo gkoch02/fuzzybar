@@ -7,8 +7,14 @@ each into Assets/screenshots/captioned/, on a canvas App Store Connect
 accepts for macOS. The caption sits above the capture, which sits on a
 ground taken from the app icon's indigo gradient (Assets/make_icon.swift).
 
-    python3 Tools/make_screenshots.py              # every frame
-    python3 Tools/make_screenshots.py 01-menubar   # one
+    python3 Tools/make_screenshots.py              # every frame, plus the strips
+    python3 Tools/make_screenshots.py 01-menubar   # one frame
+
+Besides the store frames it writes Assets/screenshots/strips/: the menubar
+captures cropped to the bar itself and equalized to one width (right edge
+kept, where the icons are), one PNG per personality plus personalities.png
+with all of them stacked on a transparent ground. The README embeds the
+stack; plumpbug.dev's FuzzyBar page copies the singles.
 
 Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
@@ -81,6 +87,11 @@ FRAMES = {
 
 
 PLAIN = {"settings.png"}
+
+# The menubar captures, in the order Personality.allCases declares them.
+STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png", "menubar-klingon.png",
+          "menubar-belter.png", "menubar-hal.png", "menubar-cthulhu.png",
+          "menubar-latin.png"]
 
 
 def raw_scale():
@@ -217,6 +228,22 @@ def render(name, spec, s):
     print(f"wrote {OUT.relative_to(ROOT)}/{name}.png {img.width}x{img.height}")
 
 
+def strips(s):
+    out = SHOTS / "strips"
+    out.mkdir(exist_ok=True)
+    ims = equalize([load(raw, s, 32) for raw in STRIPS])
+    gap = 12 * s
+    stack = Image.new("RGBA", (ims[0].width, sum(im.height for im in ims) + gap * (len(ims) - 1)))
+    y = 0
+    for raw, im in zip(STRIPS, ims):
+        im = rounded(im, 6 * s)
+        im.save(out / raw.replace("menubar-", ""), optimize=True)
+        stack.alpha_composite(im, (0, y))
+        y += im.height + gap
+    stack.save(out / "personalities.png", optimize=True)
+    print(f"wrote {out.relative_to(ROOT)}/ ({len(ims)} strips + personalities.png {stack.width}x{stack.height})")
+
+
 def main(argv):
     wanted = argv[1:] or list(FRAMES)
     s = raw_scale()
@@ -224,6 +251,8 @@ def main(argv):
         if name not in FRAMES:
             raise SystemExit(f"unknown frame {name!r}; choose from {', '.join(FRAMES)}")
         render(name, FRAMES[name], s)
+    if not argv[1:]:
+        strips(s)
 
 
 if __name__ == "__main__":

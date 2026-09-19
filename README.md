@@ -3,7 +3,7 @@
 A tiny native macOS menubar clock that tells the time in words.
 
 <p align="center">
-  <img src="Assets/screenshot.png" width="420" alt="FuzzyBar showing “nine o'clock” in the menubar, with its popover open">
+  <img src="Assets/screenshots/popover.png" width="498" alt="The menubar reading “twenty to nine”, with FuzzyBar's popover open below it: 8:42 PM, the full date, a September calendar with week numbers, and Preferences and Quit.">
 </p>
 
 Click it for the exact time, today's date, a month calendar, and a couple of
@@ -79,6 +79,10 @@ the other eight are ported from
 | HAL 9000 | `T-20 MINUTES, 2100 HOURS` | Mission-control patter; 24-hour numeric time. |
 | Cthulhu | `twenty 'fore, the ninth hour` | Lovecraftian dread; ordinal hours; climaxes with "the stars are right". |
 | Latin | `viginti ante hora IX p.m.` | Roman-numeral hours; real Latin prepositions. |
+
+<p align="center">
+  <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Seven menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; twenty 'til Hut rep; twenty to da nine bell, ya; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
+</p>
 
 The eight ported personalities share LittleFuzzyClock's twelve-slot table, so
 minutes 57 to 59 read "almost [next hour]" rather than flipping to the hour
