@@ -1,0 +1,66 @@
+# XcodeGen spec. Regenerate FuzzyBar.xcodeproj with `xcodegen generate` after
+# editing; the generated project is committed so Xcode and Organizer work
+# without the tool. SwiftPM (Package.swift) stays the local build and test path;
+# this project exists for App Store archives and signing.
+name: FuzzyBar
+options:
+  bundleIdPrefix: dev.plumpbug
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+settings:
+  base:
+    DEVELOPMENT_TEAM: FGG98L437R
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.9"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: 1
+targets:
+  FuzzyBar:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/FuzzyBar
+      - path: Resources
+    # Info.plist and FuzzyBar.entitlements are referenced by build setting only;
+    # xcodegen's `info:`/`entitlements:` keys would regenerate them.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.plumpbug.fuzzybar
+        PRODUCT_NAME: FuzzyBar
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_APP_SANDBOX: YES
+        CODE_SIGN_ENTITLEMENTS: FuzzyBar.entitlements
+        COMBINE_HIDPI_IMAGES: YES
+  FuzzyBarTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/FuzzyBarTests
+    dependencies:
+      - target: FuzzyBar
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.plumpbug.fuzzybar.FuzzyBarTests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/FuzzyBar.app/Contents/MacOS/FuzzyBar
+        BUNDLE_LOADER: $(TEST_HOST)
+schemes:
+  FuzzyBar:
+    build:
+      targets:
+        FuzzyBar: all
+        FuzzyBarTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [FuzzyBarTests]
+    archive:
+      config: Release

@@ -48,6 +48,12 @@ SIGN_IDENTITY="Apple Development: Your Name (TEAMID)" ./build.sh --install
 
 No certificates, keys, or notarization credentials are stored in this repo.
 
+There is also an Xcode project, `FuzzyBar.xcodeproj`, generated from `project.yml`
+with [XcodeGen](https://github.com/yonaskolb/XcodeGen). It exists for Mac App
+Store archives (App Sandbox, automatic signing, the asset-catalog icon) and is
+what `docs/APP_STORE.md` walks through. Day-to-day builds and tests still go
+through SwiftPM and `build.sh`.
+
 ## How the fuzzy time works
 
 Minutes are rounded to the nearest five, then mapped to the usual spoken
@@ -100,7 +106,11 @@ approval states, and build-script failure handling.
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |
 | `Assets/` | Icon renderer and the generated `.icns` |
+| `Resources/` | Asset catalog (app icon) and the privacy manifest for the Xcode build |
 | `build.sh` | Builds, signs, and optionally installs the app bundle |
+| `project.yml`, `FuzzyBar.xcodeproj` | XcodeGen spec and the generated project for App Store archives |
+| `FuzzyBar.entitlements`, `ExportOptions.plist` | App Sandbox entitlement and `xcodebuild -exportArchive` options |
+| `docs/APP_STORE.md` | Mac App Store submission playbook and listing copy |
 
 ## Regenerating the icon
 
@@ -109,6 +119,9 @@ The app icon is drawn in code. Edit `Assets/make_icon.swift` and run:
 ```sh
 ./Assets/make_icns.sh
 ```
+
+That rewrites both `Assets/AppIcon.icns` (used by `build.sh`) and the PNG set in
+`Resources/Assets.xcassets` (used by the Xcode project).
 
 ## License
 

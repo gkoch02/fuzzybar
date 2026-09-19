@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- No analytics, no advertising identifier, no third-party SDKs, no
+	     networking code at all. The app has no dependencies and generates no
+	     identifier of its own. -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!-- Nothing leaves the Mac. This must stay in step with the App Privacy
+	     answers in App Store Connect ("Data Not Collected") and with
+	     docs/fuzzybar/privacy.html in the plumpbug-site repo. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!-- UserDefaults, reason CA92.1 (the app's own defaults, not shared
+		     with an app group). Two writers: the personality preference
+		     (Personality.defaultsKey, written by Clock) and SwiftUI's own
+		     Settings scene, which remembers the Preferences window frame.
+		     Declared even though the second is framework behaviour: the
+		     binary links the API either way, and under-declaring is what
+		     gets uploads rejected (ITMS-91053). -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

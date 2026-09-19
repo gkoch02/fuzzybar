@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		37A0707D0A60FAD93E97E506 /* CalendarGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */; };
+		64816686DAFB23425652BFAB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518C89C64E34D69A91490977 /* SettingsView.swift */; };
+		682CD32C35DCE363532AA143 /* FuzzyTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */; };
+		766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */; };
+		769FBDF0F0E7FF2DC61D6AB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32569F1B104EB3ACD497659C /* Assets.xcassets */; };
+		7E0F3FD948223A4B9D22A3D9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */; };
+		95B16C71A7A9702595700B96 /* FuzzyTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */; };
+		A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */; };
+		AA2A56DB8B9CD30AC2D4F899 /* FuzzyBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */; };
+		C093B5A776EBF3FA894FAA7C /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB764659BCAC1C6A9533FAE /* Clock.swift */; };
+		CDF317B3569BE9CB37B0C5C4 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		77E6D15129279792C1226FA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D349EDF4FDE42DDD12137A1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E6251BF7CBD02F00F70346AE;
+			remoteInfo = FuzzyBar;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGrid.swift; sourceTree = "<group>"; };
+		32569F1B104EB3ACD497659C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3AB764659BCAC1C6A9533FAE /* Clock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
+		4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTimeTests.swift; sourceTree = "<group>"; };
+		518C89C64E34D69A91490977 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyBarApp.swift; sourceTree = "<group>"; };
+		7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRegressionTests.swift; sourceTree = "<group>"; };
+		CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTime.swift; sourceTree = "<group>"; };
+		E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FuzzyBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB2D60058A591C7B6666A279 /* FuzzyBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FuzzyBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettings.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		13DBB5B6EFA0C0B693811AE0 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				19CB50667FCF8D54FD277B70 /* FuzzyBar */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		19CB50667FCF8D54FD277B70 /* FuzzyBar */ = {
+			isa = PBXGroup;
+			children = (
+				2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */,
+				7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */,
+				3AB764659BCAC1C6A9533FAE /* Clock.swift */,
+				7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */,
+				CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */,
+				EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */,
+				518C89C64E34D69A91490977 /* SettingsView.swift */,
+			);
+			path = FuzzyBar;
+			sourceTree = "<group>";
+		};
+		1FD04437878CD628E652CC31 /* FuzzyBarTests */ = {
+			isa = PBXGroup;
+			children = (
+				4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */,
+				823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */,
+			);
+			path = FuzzyBarTests;
+			sourceTree = "<group>";
+		};
+		70176177032A91DFCA4F34D6 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				1FD04437878CD628E652CC31 /* FuzzyBarTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		7DC0AB03F0007EB49BFE29D4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				32569F1B104EB3ACD497659C /* Assets.xcassets */,
+				075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9EA731460705AE6095E2829D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB2D60058A591C7B6666A279 /* FuzzyBar.app */,
+				E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C880DE12B36A2FCBA06CC2AE = {
+			isa = PBXGroup;
+			children = (
+				7DC0AB03F0007EB49BFE29D4 /* Resources */,
+				13DBB5B6EFA0C0B693811AE0 /* Sources */,
+				70176177032A91DFCA4F34D6 /* Tests */,
+				9EA731460705AE6095E2829D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC5937D4AC2E16FF39630FF1 /* FuzzyBarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCC6A238CA9A7C5CAB693FE7 /* Build configuration list for PBXNativeTarget "FuzzyBarTests" */;
+			buildPhases = (
+				EBD5669BF8FEDE2B27485B51 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				49F3CCB50EA89767AB51B5BC /* PBXTargetDependency */,
+			);
+			name = FuzzyBarTests;
+			packageProductDependencies = (
+			);
+			productName = FuzzyBarTests;
+			productReference = E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E6251BF7CBD02F00F70346AE /* FuzzyBar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 940B131287A549D0CDB1BC38 /* Build configuration list for PBXNativeTarget "FuzzyBar" */;
+			buildPhases = (
+				874697EA614B86E0B7B93BF9 /* Sources */,
+				6761554297C6AB1793B1A503 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FuzzyBar;
+			packageProductDependencies = (
+			);
+			productName = FuzzyBar;
+			productReference = EB2D60058A591C7B6666A279 /* FuzzyBar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4D349EDF4FDE42DDD12137A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					AC5937D4AC2E16FF39630FF1 = {
+						DevelopmentTeam = FGG98L437R;
+						ProvisioningStyle = Automatic;
+					};
+					E6251BF7CBD02F00F70346AE = {
+						DevelopmentTeam = FGG98L437R;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 89DDCB9D85C2DE591427F6C7 /* Build configuration list for PBXProject "FuzzyBar" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C880DE12B36A2FCBA06CC2AE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9EA731460705AE6095E2829D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E6251BF7CBD02F00F70346AE /* FuzzyBar */,
+				AC5937D4AC2E16FF39630FF1 /* FuzzyBarTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6761554297C6AB1793B1A503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				769FBDF0F0E7FF2DC61D6AB4 /* Assets.xcassets in Resources */,
+				7E0F3FD948223A4B9D22A3D9 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		874697EA614B86E0B7B93BF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37A0707D0A60FAD93E97E506 /* CalendarGrid.swift in Sources */,
+				CDF317B3569BE9CB37B0C5C4 /* CalendarView.swift in Sources */,
+				C093B5A776EBF3FA894FAA7C /* Clock.swift in Sources */,
+				AA2A56DB8B9CD30AC2D4F899 /* FuzzyBarApp.swift in Sources */,
+				95B16C71A7A9702595700B96 /* FuzzyTime.swift in Sources */,
+				766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */,
+				64816686DAFB23425652BFAB /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EBD5669BF8FEDE2B27485B51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				682CD32C35DCE363532AA143 /* FuzzyTimeTests.swift in Sources */,
+				A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		49F3CCB50EA89767AB51B5BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E6251BF7CBD02F00F70346AE /* FuzzyBar */;
+			targetProxy = 77E6D15129279792C1226FA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		08C61003D71F769ED69F305D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = FGG98L437R;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		2F10EB7CD52773B800AF2141 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.plumpbug.fuzzybar.FuzzyBarTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FuzzyBar.app/Contents/MacOS/FuzzyBar";
+			};
+			name = Release;
+		};
+		35BB77F859BA4878D7C5F1F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FuzzyBar.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.plumpbug.fuzzybar;
+				PRODUCT_NAME = FuzzyBar;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		6FFBCAFCF73823C75B9F7D4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FGG98L437R;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		8FB014442E4F074610E2F3E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.plumpbug.fuzzybar.FuzzyBarTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FuzzyBar.app/Contents/MacOS/FuzzyBar";
+			};
+			name = Debug;
+		};
+		BF60B56BDE7E5EF3F2FC9183 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FuzzyBar.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.plumpbug.fuzzybar;
+				PRODUCT_NAME = FuzzyBar;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		89DDCB9D85C2DE591427F6C7 /* Build configuration list for PBXProject "FuzzyBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08C61003D71F769ED69F305D /* Debug */,
+				6FFBCAFCF73823C75B9F7D4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		940B131287A549D0CDB1BC38 /* Build configuration list for PBXNativeTarget "FuzzyBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF60B56BDE7E5EF3F2FC9183 /* Debug */,
+				35BB77F859BA4878D7C5F1F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DCC6A238CA9A7C5CAB693FE7 /* Build configuration list for PBXNativeTarget "FuzzyBarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FB014442E4F074610E2F3E2 /* Debug */,
+				2F10EB7CD52773B800AF2141 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4D349EDF4FDE42DDD12137A1 /* Project object */;
+}

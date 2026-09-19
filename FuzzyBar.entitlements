@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Hardened runtime with no extra entitlements; FuzzyBar needs nothing. -->
+    <!-- App Sandbox is required for the Mac App Store. FuzzyBar needs no
+         exceptions: no files, no network, no hardware. The login item goes
+         through SMAppService.mainApp, which works inside the sandbox. -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
 </dict>
 </plist>

@@ -12,8 +12,10 @@
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
     <key>CFBundleVersion</key><string>1</string>
+    <key>ITSAppUsesNonExemptEncryption</key><false/>
+    <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
-    <key>NSHumanReadableCopyright</key><string>© 2026 PlumpBug</string>
+    <key>NSHumanReadableCopyright</key><string>© 2026 Gregory M Koch</string>
 </dict>
 </plist>
