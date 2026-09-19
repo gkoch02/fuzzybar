@@ -6,7 +6,12 @@ import Combine
 final class Clock: ObservableObject {
     @Published private(set) var now: Date
     @Published var personality: Personality {
-        didSet { defaults.set(personality.rawValue, forKey: Personality.defaultsKey) }
+        didSet {
+            defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
+            // Phrase boundaries differ between personalities (spoken flips at
+            // :58, the ported ones at :00), so the pending tick may be wrong.
+            scheduleNextTick()
+        }
     }
     private let defaults: UserDefaults
     private var timer: Timer?
@@ -31,6 +36,9 @@ final class Clock: ObservableObject {
     }
 
     var fuzzy: String { FuzzyTime.phrase(for: now, personality: personality) }
+
+    /// When the pending tick fires; exposed for tests.
+    var timerFireDate: Date? { timer?.fireDate }
 
     func setPopoverVisible(_ visible: Bool) {
         popoverVisible = visible

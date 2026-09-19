@@ -139,6 +139,27 @@ final class PersonalityTests: XCTestCase {
         }
     }
 
+    /// Switching personality at 9:58 must move the pending tick from spoken's
+    /// 10:03 boundary to the ported 10:00 one, or the menubar stays stale.
+    @MainActor
+    func testChangingPersonalityReschedulesTick() {
+        let suite = "FuzzyBarTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        // Clock phrases in the current calendar, so build the date there too.
+        var now = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: 58))!
+        let clock = Clock(dateProvider: { now }, defaults: defaults)
+        XCTAssertEqual(clock.fuzzy, "ten o'clock")
+
+        clock.personality = .classic
+        XCTAssertEqual(clock.fuzzy, "almost ten am")
+        XCTAssertEqual(clock.timerFireDate, now.addingTimeInterval(120 + 0.05))
+
+        now = now.addingTimeInterval(120)
+        clock.refresh()
+        XCTAssertEqual(clock.fuzzy, "just after ten am")
+    }
+
     @MainActor
     func testClockPersistsPersonalityAndRephrases() {
         let suite = "FuzzyBarTests.\(UUID().uuidString)"
