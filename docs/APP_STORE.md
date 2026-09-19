@@ -7,8 +7,8 @@
 > "Price FuzzyBar at $0.99 on the Mac App Store", September 18, 2026).
 >
 > The code-side work is done (§0) and a store-signed `.pkg` has been produced from
-> this repo (September 18, 2026). What remains is App Store Connect: the agreement
-> and app record (§2), the listing copy (§3–§5), screenshots (§6), and the upload (§7).
+> this repo (September 18, 2026). What remains is App Store Connect: the app
+> record (§2), the listing copy (§3–§5), screenshots (§6), and the upload (§7).
 
 Everything that has to happen outside the code to get FuzzyBar onto the Mac App
 Store, plus the paste-ready metadata. Conventions follow the Nightdraft and Between
@@ -116,12 +116,11 @@ URL:
       ID `dev.plumpbug.fuzzybar`, SKU `fuzzybar`. The name check happens here and
       nowhere else; if "FuzzyBar" is taken, "FuzzyBar: Time in Words" is the
       fallback, and the display name in the app can stay as it is.
-- [ ] **Paid Applications Agreement** — required, because this is the first paid app
-      in the family. Agreements, Tax, and Banking → accept the Paid Apps agreement,
-      then complete the bank account, tax forms (W-9 for a U.S. individual) and
-      contact roles. Nothing can go on sale until the agreement shows "Active", and
-      Apple's review of the tax forms can take days, so start this before anything
-      else in this section.
+- [x] **Paid Applications Agreement** — already in place. This is the first paid-up-front
+      app in the family, but not the first with payments: the in-app purchases in the
+      iOS apps needed the same agreement, banking and tax setup, and it carries over
+      to every app on the account. Just confirm it still shows "Active" under
+      Agreements, Tax, and Banking; a lapsed one blocks sale for all of them.
 - [ ] **EU trader status** — choose whatever Nightdraft and Between Us chose. A paid
       app makes the DSA trader question less avoidable than it was for the free ones:
       selling in EU storefronts publishes your name, address and phone number on the
