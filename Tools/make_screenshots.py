@@ -20,6 +20,17 @@ Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
 for an image. Edit captions here and nowhere else.
 
+PENDING A MAC: the Klingon and Belter personalities were withdrawn and two
+others renamed (fuzzybar#9), so their captures were deleted and the captions
+below rewritten. Nothing new needs shooting. captioned/03-personalities.png
+was rendered before that change, read "NINE PERSONALITIES" over the Klingon
+and Belter strips, and is **deleted rather than left in place**: it is the
+App Store upload, and a stale one there advertises the franchise names #9
+exists to remove. Run this script on a Mac to write it back. The other three
+frames are personality-agnostic and still current, so a partial run
+(`python3 Tools/make_screenshots.py 03-personalities`) is enough to restore
+it, though a full run costs nothing and keeps the set consistent.
+
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
 store's smallest size, 1280 x 800, and captures are placed at 1x (menubar
@@ -70,12 +81,11 @@ FRAMES = {
         shots=[("popover.png", "fit")],
     ),
     "03-personalities": dict(
-        eyebrow="Nine personalities",
-        headline="Plain spoken English, Shakespeare, Klingon, Belter, German, "
-                 "HAL 9000, Cthulhu, or Latin.",
-        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-klingon.png", 1.8, 32),
-               ("menubar-belter.png", 1.8, 32), ("menubar-hal.png", 1.8, 32),
-               ("menubar-cthulhu.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
+        eyebrow="Seven personalities",
+        headline="Plain spoken English, Classic, Shakespeare, German, "
+                 "Mission Control, Eldritch, or Latin.",
+        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-missioncontrol.png", 1.8, 32),
+               ("menubar-eldritch.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
         uniform=True,
     ),
     "04-settings": dict(
@@ -89,8 +99,9 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png", "menubar-klingon.png",
-          "menubar-belter.png", "menubar-hal.png", "menubar-cthulhu.png",
+# Five of the seven: Classic and German have never had a strip of their own.
+STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png",
+          "menubar-missioncontrol.png", "menubar-eldritch.png",
           "menubar-latin.png"]
 
 

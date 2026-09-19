@@ -23,7 +23,15 @@ final class Clock: ObservableObject {
         self.dateProvider = dateProvider
         self.defaults = defaults
         now = dateProvider()
-        personality = defaults.string(forKey: Personality.defaultsKey).flatMap(Personality.init) ?? .default
+        let saved = defaults.string(forKey: Personality.defaultsKey)
+        personality = saved.flatMap(Personality.stored) ?? .default
+        // A pre-rename value ("hal", "cthulhu") reads back as the personality
+        // it became, and a withdrawn one ("klingon", "belter") reads back as
+        // the default; either way write the current spelling so it only
+        // migrates once. didSet does not run during init, so do it by hand.
+        if let saved, saved != personality.rawValue {
+            defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
+        }
         scheduleNextTick()
         observe(.NSSystemClockDidChange, in: .default)
         observe(.NSSystemTimeZoneDidChange, in: .default)

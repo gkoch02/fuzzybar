@@ -18,11 +18,9 @@ final class PersonalityTests: XCTestCase {
     func testHalfPastNineAcrossEveryPersonality() {
         XCTAssertEqual(p(9, 30, .classic), "half past nine am")
         XCTAssertEqual(p(9, 30, .shakespeare), "'tis half past nine of the clock")
-        XCTAssertEqual(p(9, 30, .klingon), "half past Hut rep")
-        XCTAssertEqual(p(9, 30, .belter), "half past nine bell, ya")
         XCTAssertEqual(p(9, 30, .german), "halb zehn")
-        XCTAssertEqual(p(9, 30, .hal), "MIDPOINT, 0900 HOURS")
-        XCTAssertEqual(p(9, 30, .cthulhu), "the half-hour, the ninth hour")
+        XCTAssertEqual(p(9, 30, .missionControl), "MIDPOINT, 0900 HOURS")
+        XCTAssertEqual(p(9, 30, .eldritch), "the half-hour, the ninth hour")
         XCTAssertEqual(p(9, 30, .latin), "media post hora IX a.m.")
     }
 
@@ -47,21 +45,6 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(23, 58, .shakespeare), "almost twelve of the clock")
     }
 
-    func testKlingon() {
-        XCTAssertEqual(p(9, 0, .klingon), "newly forged Hut rep")
-        XCTAssertEqual(p(9, 45, .klingon), "quarter 'til wa'maH rep")
-        XCTAssertEqual(p(9, 58, .klingon), "battle nears wa'maH rep")
-        XCTAssertEqual(p(23, 58, .klingon), "battle nears wa'maH cha' rep")
-    }
-
-    func testBelter() {
-        XCTAssertEqual(p(9, 0, .belter), "just past nine bell, ya")
-        XCTAssertEqual(p(9, 5, .belter), "showxa pasa nine bell, ya")
-        XCTAssertEqual(p(9, 45, .belter), "quarter to da ten bell, ya")
-        XCTAssertEqual(p(9, 58, .belter), "almost, ke ten bell, ya")
-        XCTAssertEqual(p(23, 58, .belter), "almost, ke twelve bell, ya")
-    }
-
     func testGermanAdvancesHourAtTwentyFivePast() {
         XCTAssertEqual(p(9, 0, .german), "kurz nach neun")
         XCTAssertEqual(p(9, 5, .german), "fünf nach neun")
@@ -77,26 +60,26 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(23, 58, .german), "kurz vor zwölf")
     }
 
-    func testHalUsesTwentyFourHourTime() {
-        XCTAssertEqual(p(9, 0, .hal), "ON THE MARK, 0900 HOURS")
-        XCTAssertEqual(p(9, 15, .hal), "T+15 MINUTES, 0900 HOURS")
-        XCTAssertEqual(p(9, 35, .hal), "T-25 MINUTES, 1000 HOURS")
-        XCTAssertEqual(p(9, 45, .hal), "T-15 MINUTES, 1000 HOURS")
-        XCTAssertEqual(p(9, 58, .hal), "IMMINENT, 1000 HOURS")
-        XCTAssertEqual(p(21, 0, .hal), "ON THE MARK, 2100 HOURS")
-        XCTAssertEqual(p(15, 30, .hal), "MIDPOINT, 1500 HOURS")
-        XCTAssertEqual(p(12, 0, .hal), "ON THE MARK, 1200 HOURS")
-        XCTAssertEqual(p(23, 58, .hal), "IMMINENT, 0000 HOURS")
-        XCTAssertEqual(p(0, 0, .hal), "ON THE MARK, 0000 HOURS")
+    func testMissionControlUsesTwentyFourHourTime() {
+        XCTAssertEqual(p(9, 0, .missionControl), "ON THE MARK, 0900 HOURS")
+        XCTAssertEqual(p(9, 15, .missionControl), "T+15 MINUTES, 0900 HOURS")
+        XCTAssertEqual(p(9, 35, .missionControl), "T-25 MINUTES, 1000 HOURS")
+        XCTAssertEqual(p(9, 45, .missionControl), "T-15 MINUTES, 1000 HOURS")
+        XCTAssertEqual(p(9, 58, .missionControl), "IMMINENT, 1000 HOURS")
+        XCTAssertEqual(p(21, 0, .missionControl), "ON THE MARK, 2100 HOURS")
+        XCTAssertEqual(p(15, 30, .missionControl), "MIDPOINT, 1500 HOURS")
+        XCTAssertEqual(p(12, 0, .missionControl), "ON THE MARK, 1200 HOURS")
+        XCTAssertEqual(p(23, 58, .missionControl), "IMMINENT, 0000 HOURS")
+        XCTAssertEqual(p(0, 0, .missionControl), "ON THE MARK, 0000 HOURS")
     }
 
-    func testCthulhu() {
-        XCTAssertEqual(p(9, 0, .cthulhu), "newly woken, the ninth hour")
-        XCTAssertEqual(p(9, 45, .cthulhu), "quarter 'fore, the tenth hour")
-        XCTAssertEqual(p(9, 58, .cthulhu), "the stars are right, the tenth hour")
-        XCTAssertEqual(p(10, 45, .cthulhu), "quarter 'fore, the eleventh hour")
-        XCTAssertEqual(p(23, 58, .cthulhu), "the stars are right, the twelfth hour")
-        XCTAssertEqual(p(0, 30, .cthulhu), "the half-hour, the twelfth hour")
+    func testEldritch() {
+        XCTAssertEqual(p(9, 0, .eldritch), "newly woken, the ninth hour")
+        XCTAssertEqual(p(9, 45, .eldritch), "quarter 'fore, the tenth hour")
+        XCTAssertEqual(p(9, 58, .eldritch), "the stars are right, the tenth hour")
+        XCTAssertEqual(p(10, 45, .eldritch), "quarter 'fore, the eleventh hour")
+        XCTAssertEqual(p(23, 58, .eldritch), "the stars are right, the twelfth hour")
+        XCTAssertEqual(p(0, 30, .eldritch), "the half-hour, the twelfth hour")
     }
 
     func testLatin() {
@@ -171,15 +154,68 @@ final class PersonalityTests: XCTestCase {
 
         let clock = Clock(dateProvider: { date }, defaults: defaults)
         XCTAssertEqual(clock.personality, .spoken)
-        clock.personality = .hal
-        XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "hal")
-        XCTAssertEqual(clock.fuzzy, FuzzyTime.phrase(for: date, personality: .hal))
+        clock.personality = .missionControl
+        XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "missionControl")
+        XCTAssertEqual(clock.fuzzy, FuzzyTime.phrase(for: date, personality: .missionControl))
 
         let reloaded = Clock(dateProvider: { date }, defaults: defaults)
-        XCTAssertEqual(reloaded.personality, .hal)
+        XCTAssertEqual(reloaded.personality, .missionControl)
 
         defaults.set("not-a-personality", forKey: Personality.defaultsKey)
         XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
+    }
+
+    func testSevenPersonalitiesShip() {
+        XCTAssertEqual(Personality.allCases.count, 7)
+        XCTAssertEqual(Personality.allCases.map(\.rawValue),
+                       ["spoken", "classic", "shakespeare", "german",
+                        "missionControl", "eldritch", "latin"])
+    }
+
+    /// Two personalities were renamed off their franchise labels before the
+    /// App Store submission and two were withdrawn. A preference written by
+    /// an older build still holds the old raw value, and reading it must not
+    /// crash or leave the app on a personality that no longer exists.
+    func testPreRenameValuesMigrateAndWithdrawnOnesFallBack() {
+        XCTAssertEqual(Personality.stored("hal"), .missionControl)
+        XCTAssertEqual(Personality.stored("cthulhu"), .eldritch)
+        XCTAssertNil(Personality.stored("klingon"))
+        XCTAssertNil(Personality.stored("belter"))
+        for personality in Personality.allCases {
+            XCTAssertEqual(Personality.stored(personality.rawValue), personality)
+        }
+        XCTAssertNil(Personality.stored("not-a-personality"))
+    }
+
+    @MainActor
+    func testClockMigratesAndRewritesAPreRenameChoice() {
+        let suite = "FuzzyBarTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let date = Date()
+
+        defaults.set("cthulhu", forKey: Personality.defaultsKey)
+        let clock = Clock(dateProvider: { date }, defaults: defaults)
+        XCTAssertEqual(clock.personality, .eldritch)
+        // Rewritten once, so the next launch reads it straight.
+        XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "eldritch")
+        XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .eldritch)
+    }
+
+    /// A withdrawn personality has nothing to migrate to, so the app falls
+    /// back to Spoken and stops carrying a value it can no longer honour.
+    @MainActor
+    func testClockFallsBackFromAWithdrawnChoice() {
+        let suite = "FuzzyBarTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let date = Date()
+
+        for retired in ["klingon", "belter"] {
+            defaults.set(retired, forKey: Personality.defaultsKey)
+            XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
+            XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "spoken")
+        }
     }
 
     /// The ported personalities all change phrase on the same minutes, and the
