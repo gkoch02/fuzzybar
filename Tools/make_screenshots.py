@@ -160,7 +160,26 @@ def load(raw, s, crop=None):
     return im
 
 
-def equalize(ims):
+def anchor_right(im, s):
+    """Crop so the rightmost menubar icon (the clock ring, the brightest
+    thing at the right end of the bar) ends the same distance from the edge
+    in every strip. A ⇧⌘4 drag never stops on the same pixel twice."""
+    px = im.convert("L").load()
+    bar = min(im.height, 32 * s)
+    for x in range(im.width - 1, -1, -1):
+        if any(px[x, y] > 170 for y in range(4 * s, bar - 4 * s)):
+            right = x + 1 + 12 * s
+            if right > im.width:  # tight capture: extend the bar from its last column
+                wide = Image.new("RGBA", (right, im.height))
+                wide.paste(im, (0, 0))
+                wide.paste(im.crop((im.width - 1, 0, im.width, im.height)).resize((right - im.width, im.height)), (im.width, 0))
+                return wide
+            return im.crop((0, 0, right, im.height))
+    return im
+
+
+def equalize(ims, s):
+    ims = [anchor_right(im, s) for im in ims]
     width = max(im.width for im in ims)
     out = []
     for im in ims:
@@ -201,7 +220,7 @@ def render(name, spec, s):
     avail = H - top - int(H * 0.06)
     raws = [load(shot[0], s, *shot[2:]) for shot in spec["shots"]]
     if spec.get("uniform"):
-        raws = equalize(raws)
+        raws = equalize(raws, s)
     shots = [place(shot[0], im, shot[1], s, avail) for shot, im in zip(spec["shots"], raws)]
     plain = [im for im, shot in zip(shots, spec["shots"]) if shot[0] in PLAIN]
     gap = 28 * s
@@ -231,7 +250,7 @@ def render(name, spec, s):
 def strips(s):
     out = SHOTS / "strips"
     out.mkdir(exist_ok=True)
-    ims = equalize([load(raw, s, 32) for raw in STRIPS])
+    ims = equalize([load(raw, s, 32) for raw in STRIPS], s)
     gap = 12 * s
     stack = Image.new("RGBA", (ims[0].width, sum(im.height for im in ims) + gap * (len(ims) - 1)))
     y = 0
