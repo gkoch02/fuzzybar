@@ -1,6 +1,7 @@
 .build/
 build/
-*.xcodeproj
+xcuserdata/
+.swiftpm/
 .DS_Store
 Assets/AppIcon-1024.png
 # Never commit signing material
