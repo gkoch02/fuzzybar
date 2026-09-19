@@ -13,3 +13,6 @@ Assets/AppIcon-1024.png
 .env
 Assets/screenshots/
 __pycache__/
+# App Store submission material stays local; the repo is public
+docs/APP_STORE.md
+ExportOptions.plist
