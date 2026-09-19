@@ -5,14 +5,20 @@ import Combine
 @MainActor
 final class Clock: ObservableObject {
     @Published private(set) var now: Date
+    @Published var personality: Personality {
+        didSet { defaults.set(personality.rawValue, forKey: Personality.defaultsKey) }
+    }
+    private let defaults: UserDefaults
     private var timer: Timer?
     private var observers: [(NotificationCenter, NSObjectProtocol)] = []
     private var popoverVisible = false
     private let dateProvider: () -> Date
 
-    init(dateProvider: @escaping () -> Date = Date.init) {
+    init(dateProvider: @escaping () -> Date = Date.init, defaults: UserDefaults = .standard) {
         self.dateProvider = dateProvider
+        self.defaults = defaults
         now = dateProvider()
+        personality = defaults.string(forKey: Personality.defaultsKey).flatMap(Personality.init) ?? .default
         scheduleNextTick()
         observe(.NSSystemClockDidChange, in: .default)
         observe(.NSSystemTimeZoneDidChange, in: .default)
@@ -24,7 +30,7 @@ final class Clock: ObservableObject {
         for (center, token) in observers { center.removeObserver(token) }
     }
 
-    var fuzzy: String { FuzzyTime.phrase(for: now) }
+    var fuzzy: String { FuzzyTime.phrase(for: now, personality: personality) }
 
     func setPopoverVisible(_ visible: Bool) {
         popoverVisible = visible
@@ -44,12 +50,13 @@ final class Clock: ObservableObject {
     }
 
     /// Search actual minute boundaries so DST and non-whole-hour time zones work.
-    static func nextTick(after date: Date, popoverVisible: Bool, calendar: Calendar = .current) -> Date {
+    static func nextTick(after date: Date, popoverVisible: Bool, calendar: Calendar = .current,
+                         personality: Personality = .default) -> Date {
         let minuteStart = calendar.dateInterval(of: .minute, for: date)!.start
-        let phrase = FuzzyTime.phrase(for: date, calendar: calendar)
+        let phrase = FuzzyTime.phrase(for: date, calendar: calendar, personality: personality)
         for offset in 1...5 {
             let candidate = minuteStart.addingTimeInterval(Double(offset) * 60)
-            if popoverVisible || FuzzyTime.phrase(for: candidate, calendar: calendar) != phrase {
+            if popoverVisible || FuzzyTime.phrase(for: candidate, calendar: calendar, personality: personality) != phrase {
                 return candidate.addingTimeInterval(0.05)
             }
         }
@@ -58,7 +65,7 @@ final class Clock: ObservableObject {
 
     private func scheduleNextTick() {
         timer?.invalidate()
-        let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible)
+        let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible, personality: personality)
         let t = Timer(fire: fireDate, interval: 0, repeats: false) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
         }

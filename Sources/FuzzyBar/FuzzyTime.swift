@@ -2,13 +2,24 @@ import Foundation
 
 /// Converts a clock time into a fuzzy phrase like "twenty to nine".
 /// Minutes are rounded to the nearest five (37 -> 35, 38 -> 40).
+/// The default "spoken" personality is FuzzyBar's own; the rest come from
+/// LittleFuzzyClock and share its twelve-slot table (see `Personality`).
 enum FuzzyTime {
     private static let hourWords = [
         "twelve", "one", "two", "three", "four", "five",
         "six", "seven", "eight", "nine", "ten", "eleven",
     ]
 
-    static func phrase(hour: Int, minute: Int) -> String {
+    static func phrase(hour: Int, minute: Int, personality: Personality = .default) -> String {
+        guard let slots = personality.slotPhrases else { return spokenPhrase(hour: hour, minute: minute) }
+        // Cap at 11 so minutes 57-59 read "almost [next hour]" rather than
+        // wrapping back to "just after [current hour]".
+        let slot = min(Int((Double(minute) / 5.0).rounded()), 11)
+        let displayHour = slot < personality.hourAdvanceSlot ? hour : (hour + 1) % 24
+        return slots[slot] + personality.joiner + personality.hourText(displayHour: displayHour)
+    }
+
+    private static func spokenPhrase(hour: Int, minute: Int) -> String {
         var h = hour
         var slot = Int((Double(minute) / 5.0).rounded())  // 0...12
         if slot == 12 { slot = 0; h += 1 }
@@ -34,8 +45,8 @@ enum FuzzyTime {
         }
     }
 
-    static func phrase(for date: Date, calendar: Calendar = .current) -> String {
+    static func phrase(for date: Date, calendar: Calendar = .current, personality: Personality = .default) -> String {
         let c = calendar.dateComponents([.hour, .minute], from: date)
-        return phrase(hour: c.hour ?? 0, minute: c.minute ?? 0)
+        return phrase(hour: c.hour ?? 0, minute: c.minute ?? 0, personality: personality)
     }
 }
