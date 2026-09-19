@@ -6,17 +6,16 @@ import Foundation
 /// personality also says how to join the two halves.
 ///
 /// Four of them were named after franchises (Klingon, Belter, HAL 9000,
-/// Cthulhu) until the App Store submission; the implementations were always
-/// original, but the labels borrowed marks this app has no licence to use.
-/// They are now Warrior, Spacefarer, Mission Control and Eldritch, and the
-/// two that quoted an invented language outright (tlhIngan Hol numerals,
-/// Lang Belta particles) carry vocabulary of their own instead.
+/// Cthulhu) until the App Store submission. HAL 9000 and Cthulhu only ever
+/// borrowed a label, so they kept their tables and became Mission Control
+/// and Eldritch. Klingon and Belter went further than a name: their phrases
+/// were tlhIngan Hol numerals and Lang Belta particles, the languages
+/// themselves rather than a reference to them. Both are withdrawn rather
+/// than rewritten, so the app ships seven.
 enum Personality: String, CaseIterable, Identifiable {
     case spoken
     case classic
     case shakespeare
-    case warrior
-    case spacefarer
     case german
     case missionControl
     case eldritch
@@ -27,15 +26,17 @@ enum Personality: String, CaseIterable, Identifiable {
 
     /// Raw values written by builds from before the rename. A preference
     /// file is the user's choice, not ours to drop, so map it forward.
+    /// "klingon" and "belter" are deliberately absent: those two were
+    /// withdrawn rather than renamed, and nothing survives to map them to,
+    /// so they fall back to the default the way an unknown value does.
     private static let renamed: [String: Personality] = [
-        "klingon": .warrior,
-        "belter": .spacefarer,
         "hal": .missionControl,
         "cthulhu": .eldritch,
     ]
 
     /// Reads a stored `defaultsKey` string, migrating a pre-rename value.
-    /// `nil` for anything that was never a personality.
+    /// `nil` for a withdrawn one and for anything that was never a
+    /// personality; the caller supplies the default.
     static func stored(_ raw: String) -> Personality? {
         Personality(rawValue: raw) ?? renamed[raw]
     }
@@ -48,8 +49,6 @@ enum Personality: String, CaseIterable, Identifiable {
         case .spoken: return "Spoken"
         case .classic: return "Classic"
         case .shakespeare: return "Shakespeare"
-        case .warrior: return "Warrior"
-        case .spacefarer: return "Spacefarer"
         case .german: return "German"
         case .missionControl: return "Mission Control"
         case .eldritch: return "Eldritch"
@@ -63,8 +62,6 @@ enum Personality: String, CaseIterable, Identifiable {
         case .spoken: return "The way you'd say it out loud."
         case .classic: return "Plain English with am and pm."
         case .shakespeare: return "Archaic English; no am or pm, that's anachronistic."
-        case .warrior: return "An invented warrior tongue; \"kaal\" is its word for hour."
-        case .spacefarer: return "Shipboard creole; hours struck in bells, minutes on and off."
         case .german: return "Standard High German; \"halb\" anchors on the next hour."
         case .missionControl: return "Mission-control patter in 24-hour time."
         case .eldritch: return "Cosmic dread; climaxes with \"the stars are right\"."
@@ -86,14 +83,6 @@ enum Personality: String, CaseIterable, Identifiable {
             return ["'tis just past", "a moment past", "ten past", "'tis a quarter past", "twenty past",
                     "twenty-five past", "'tis half past", "twenty-five 'fore", "twenty 'fore",
                     "a quarter 'fore", "ten 'fore", "almost"]
-        case .warrior:
-            return ["newly forged", "moments past", "ten past", "quarter past", "twenty past",
-                    "twenty-five past", "half past", "twenty-five 'til", "twenty 'til", "quarter 'til",
-                    "ten 'til", "battle nears"]
-        case .spacefarer:
-            return ["just on", "five on", "ten on", "quarter on", "twenty on",
-                    "twenty-five on", "half on", "twenty-five off", "twenty off", "quarter off",
-                    "ten off", "near as"]
         case .german:
             return ["kurz nach", "fünf nach", "zehn nach", "viertel nach", "zwanzig nach",
                     "fünf vor halb", "halb", "fünf nach halb", "zwanzig vor", "viertel vor",
@@ -131,12 +120,6 @@ enum Personality: String, CaseIterable, Identifiable {
         "twelve", "one", "two", "three", "four", "five",
         "six", "seven", "eight", "nine", "ten", "eleven",
     ]
-    /// Invented, not borrowed: a made-up warrior tongue that counts in tens
-    /// the way the numerals it replaced did, so eleven is "ten one".
-    private static let warriorHours = [
-        "vok vekh", "dhur", "vekh", "tarn", "kosh", "grav",
-        "zhan", "mokh", "durn", "skarn", "vok", "vok dhur",
-    ]
     private static let germanHours = [
         "zwölf", "eins", "zwei", "drei", "vier", "fünf",
         "sechs", "sieben", "acht", "neun", "zehn", "elf",
@@ -160,10 +143,6 @@ enum Personality: String, CaseIterable, Identifiable {
             return "\(Self.englishHours[index]) \(isPM ? "pm" : "am")"
         case .shakespeare:
             return "\(Self.englishHours[index]) of the clock"
-        case .warrior:
-            return "\(Self.warriorHours[index]) kaal"
-        case .spacefarer:
-            return "\(Self.englishHours[index]) bells, aye"
         case .german:
             return Self.germanHours[index]
         case .missionControl:

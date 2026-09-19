@@ -18,8 +18,6 @@ final class PersonalityTests: XCTestCase {
     func testHalfPastNineAcrossEveryPersonality() {
         XCTAssertEqual(p(9, 30, .classic), "half past nine am")
         XCTAssertEqual(p(9, 30, .shakespeare), "'tis half past nine of the clock")
-        XCTAssertEqual(p(9, 30, .warrior), "half past skarn kaal")
-        XCTAssertEqual(p(9, 30, .spacefarer), "half on nine bells, aye")
         XCTAssertEqual(p(9, 30, .german), "halb zehn")
         XCTAssertEqual(p(9, 30, .missionControl), "MIDPOINT, 0900 HOURS")
         XCTAssertEqual(p(9, 30, .eldritch), "the half-hour, the ninth hour")
@@ -45,21 +43,6 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(9, 45, .shakespeare), "a quarter 'fore ten of the clock")
         XCTAssertEqual(p(9, 58, .shakespeare), "almost ten of the clock")
         XCTAssertEqual(p(23, 58, .shakespeare), "almost twelve of the clock")
-    }
-
-    func testWarrior() {
-        XCTAssertEqual(p(9, 0, .warrior), "newly forged skarn kaal")
-        XCTAssertEqual(p(9, 45, .warrior), "quarter 'til vok kaal")
-        XCTAssertEqual(p(9, 58, .warrior), "battle nears vok kaal")
-        XCTAssertEqual(p(23, 58, .warrior), "battle nears vok vekh kaal")
-    }
-
-    func testSpacefarer() {
-        XCTAssertEqual(p(9, 0, .spacefarer), "just on nine bells, aye")
-        XCTAssertEqual(p(9, 5, .spacefarer), "five on nine bells, aye")
-        XCTAssertEqual(p(9, 45, .spacefarer), "quarter off ten bells, aye")
-        XCTAssertEqual(p(9, 58, .spacefarer), "near as ten bells, aye")
-        XCTAssertEqual(p(23, 58, .spacefarer), "near as twelve bells, aye")
     }
 
     func testGermanAdvancesHourAtTwentyFivePast() {
@@ -182,14 +165,22 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
     }
 
-    /// Four personalities were renamed off their franchise labels before the
-    /// App Store submission. A preference written by an older build still
-    /// holds the old raw value, and it must survive the update.
-    func testPreRenameValuesMigrate() {
-        XCTAssertEqual(Personality.stored("klingon"), .warrior)
-        XCTAssertEqual(Personality.stored("belter"), .spacefarer)
+    func testSevenPersonalitiesShip() {
+        XCTAssertEqual(Personality.allCases.count, 7)
+        XCTAssertEqual(Personality.allCases.map(\.rawValue),
+                       ["spoken", "classic", "shakespeare", "german",
+                        "missionControl", "eldritch", "latin"])
+    }
+
+    /// Two personalities were renamed off their franchise labels before the
+    /// App Store submission and two were withdrawn. A preference written by
+    /// an older build still holds the old raw value, and reading it must not
+    /// crash or leave the app on a personality that no longer exists.
+    func testPreRenameValuesMigrateAndWithdrawnOnesFallBack() {
         XCTAssertEqual(Personality.stored("hal"), .missionControl)
         XCTAssertEqual(Personality.stored("cthulhu"), .eldritch)
+        XCTAssertNil(Personality.stored("klingon"))
+        XCTAssertNil(Personality.stored("belter"))
         for personality in Personality.allCases {
             XCTAssertEqual(Personality.stored(personality.rawValue), personality)
         }
@@ -209,6 +200,22 @@ final class PersonalityTests: XCTestCase {
         // Rewritten once, so the next launch reads it straight.
         XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "eldritch")
         XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .eldritch)
+    }
+
+    /// A withdrawn personality has nothing to migrate to, so the app falls
+    /// back to Spoken and stops carrying a value it can no longer honour.
+    @MainActor
+    func testClockFallsBackFromAWithdrawnChoice() {
+        let suite = "FuzzyBarTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let date = Date()
+
+        for retired in ["klingon", "belter"] {
+            defaults.set(retired, forKey: Personality.defaultsKey)
+            XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
+            XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "spoken")
+        }
     }
 
     /// The ported personalities all change phrase on the same minutes, and the

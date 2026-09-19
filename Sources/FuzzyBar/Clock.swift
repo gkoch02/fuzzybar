@@ -25,9 +25,10 @@ final class Clock: ObservableObject {
         now = dateProvider()
         let saved = defaults.string(forKey: Personality.defaultsKey)
         personality = saved.flatMap(Personality.stored) ?? .default
-        // A pre-rename value ("klingon", "hal", ...) reads back as the
-        // personality it became; write the new spelling so it only migrates
-        // once. didSet does not run during init, so do it by hand.
+        // A pre-rename value ("hal", "cthulhu") reads back as the personality
+        // it became, and a withdrawn one ("klingon", "belter") reads back as
+        // the default; either way write the current spelling so it only
+        // migrates once. didSet does not run during init, so do it by hand.
         if let saved, saved != personality.rawValue {
             defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
         }

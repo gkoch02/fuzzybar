@@ -20,13 +20,11 @@ Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
 for an image. Edit captions here and nowhere else.
 
-PENDING A MAC: the Warrior and Spacefarer personalities were renamed and
-rephrased off their franchise labels (fuzzybar#9), so the old Klingon and
-Belter captures were deleted rather than left showing words the app no
-longer says. Shoot menubar-warrior.png and menubar-spacefarer.png at 8:40
-pm, add them back to STRIPS and to the 03-personalities shot list, and
-re-run this script before the next store upload. Until then the captioned
-set in captioned/ is one re-run behind this file's captions.
+PENDING A MAC: the Klingon and Belter personalities were withdrawn and two
+others renamed (fuzzybar#9), so their captures were deleted and the captions
+below rewritten. Nothing new needs shooting, but captioned/ was rendered
+before that change and still names them; re-run this script on a Mac before
+the next store upload.
 
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
@@ -78,10 +76,9 @@ FRAMES = {
         shots=[("popover.png", "fit")],
     ),
     "03-personalities": dict(
-        eyebrow="Nine personalities",
-        headline="Plain spoken English, Shakespeare, Warrior, Spacefarer, German, "
+        eyebrow="Seven personalities",
+        headline="Plain spoken English, Classic, Shakespeare, German, "
                  "Mission Control, Eldritch, or Latin.",
-        # menubar-warrior.png and menubar-spacefarer.png belong here once shot.
         shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-missioncontrol.png", 1.8, 32),
                ("menubar-eldritch.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
         uniform=True,
@@ -97,8 +94,7 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-# "menubar-warrior.png" and "menubar-spacefarer.png" go back in after
-# Warrior and Spacefarer are re-shot; see the note at the top of this file.
+# Five of the seven: Classic and German have never had a strip of their own.
 STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png",
           "menubar-missioncontrol.png", "menubar-eldritch.png",
           "menubar-latin.png"]

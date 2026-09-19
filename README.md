@@ -16,7 +16,7 @@ builds natively for Apple Silicon, and has no dependencies.
 ## Features
 
 - Time in words in the menubar, updated when the phrase changes
-- Nine personalities, from plain spoken English to Warrior, Mission Control, and Eldritch
+- Seven personalities, from plain spoken English to Mission Control and Eldritch
 - Popover with the exact time, full date, and a month calendar with week numbers
 - Start at login, via the system Login Items list
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
@@ -63,7 +63,7 @@ hour. So 8:38 is "twenty to nine" and 8:37 is "twenty-five to nine".
 ## Personalities
 
 Preferences has a Personality picker. The default is the spoken English above;
-the other eight are ported from
+the other six are ported from
 [LittleFuzzyClock](https://github.com/gkoch02/LittleFuzzyClock). All shown at
 8:40 pm:
 
@@ -72,8 +72,6 @@ the other eight are ported from
 | Spoken (default) | `twenty to nine` | The way you'd say it out loud. |
 | Classic | `twenty to nine pm` | Plain English with am and pm; "just after" and "almost" at the edges. |
 | Shakespeare | `twenty 'fore nine of the clock` | Archaic English; drops am/pm as anachronistic. |
-| Warrior | `twenty 'til skarn kaal` | An invented warrior tongue counting in tens; "kaal" is its word for *hour*. |
-| Spacefarer | `twenty off nine bells, aye` | Shipboard creole; hours struck in bells, minutes counted on and off. |
 | German | `zwanzig vor neun` | Standard High German; "halb zehn" anchors on the *next* hour. |
 | Mission Control | `T-20 MINUTES, 2100 HOURS` | Mission-control patter; 24-hour numeric time. |
 | Eldritch | `twenty 'fore, the ninth hour` | Cosmic dread; ordinal hours; climaxes with "the stars are right". |
@@ -83,16 +81,19 @@ the other eight are ported from
   <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Five menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
 </p>
 
-Five of the nine are in that stack. Four personalities were renamed off
-franchise labels before the store submission: Klingon, Belter, HAL 9000 and
-Cthulhu are now Warrior, Spacefarer, Mission Control and Eldritch. The first
-two were rephrased as well, since their wording quoted an invented language
-outright, so the old captures went with them; `Tools/make_screenshots.py`
-says what to shoot to put those two strips back. A preference written by an
-older build migrates on first launch, so nobody loses the personality they
-picked.
+Five of the seven are in that stack; Classic and German have never had a
+strip of their own.
 
-The eight ported personalities share LittleFuzzyClock's twelve-slot table, so
+There were nine until the store submission, and four of them carried
+franchise names. HAL 9000 and Cthulhu had borrowed only the label, so they
+kept their phrase tables and became Mission Control and Eldritch. Klingon and
+Belter had gone further: their phrases were tlhIngan Hol numerals and Lang
+Belta particles, which is the language itself rather than a nod to it, and
+renaming them would have kept the exposure while hiding the tell. Both are
+withdrawn. A preference file naming one of the renamed two migrates on first
+launch; one naming a withdrawn personality falls back to Spoken.
+
+The six ported personalities share LittleFuzzyClock's twelve-slot table, so
 minutes 57 to 59 read "almost [next hour]" rather than flipping to the hour
 early the way the spoken default does. The phrase tables live in
 `Sources/FuzzyBar/Personality.swift`.
@@ -113,7 +114,7 @@ approval states, and build-script failure handling.
 | --- | --- |
 | `Sources/FuzzyBar/FuzzyBarApp.swift` | App entry point and the menubar popover |
 | `Sources/FuzzyBar/FuzzyTime.swift` | Time-to-words conversion |
-| `Sources/FuzzyBar/Personality.swift` | The nine phrasing personalities |
+| `Sources/FuzzyBar/Personality.swift` | The seven phrasing personalities |
 | `Sources/FuzzyBar/Clock.swift` | Phrase-boundary ticker (minute updates while the popover is open) |
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |
