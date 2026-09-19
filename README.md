@@ -3,7 +3,7 @@
 A tiny native macOS menubar clock that tells the time in words.
 
 <p align="center">
-  <img src="Assets/screenshot.png" width="420" alt="FuzzyBar showing “nine o'clock” in the menubar, with its popover open">
+  <img src="Assets/screenshots/popover.png" width="498" alt="The menubar reading “twenty to nine”, with FuzzyBar's popover open below it: 8:42 PM, the full date, a September calendar with week numbers, and Preferences and Quit.">
 </p>
 
 Click it for the exact time, today's date, a month calendar, and a couple of
@@ -79,6 +79,10 @@ the other eight are ported from
 | Cthulhu | `twenty 'fore, the ninth hour` | Lovecraftian dread; ordinal hours; climaxes with "the stars are right". |
 | Latin | `viginti ante hora IX p.m.` | Roman-numeral hours; real Latin prepositions. |
 
+<p align="center">
+  <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Seven menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; twenty 'til Hut rep; twenty to da nine bell, ya; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
+</p>
+
 The eight ported personalities share LittleFuzzyClock's twelve-slot table, so
 minutes 57 to 59 read "almost [next hour]" rather than flipping to the hour
 early the way the spoken default does. The phrase tables live in
@@ -104,7 +108,8 @@ approval states, and build-script failure handling.
 | `Sources/FuzzyBar/Clock.swift` | Phrase-boundary ticker (minute updates while the popover is open) |
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |
-| `Assets/` | Icon renderer and the generated `.icns` |
+| `Assets/` | Icon renderer, the generated `.icns`, and the store screenshots (raws plus captioned set) |
+| `Tools/make_screenshots.py` | Renders the captioned screenshots from the raws |
 | `Resources/` | Asset catalog (app icon) and the privacy manifest for the Xcode build |
 | `build.sh` | Builds, signs, and optionally installs the app bundle |
 | `project.yml`, `FuzzyBar.xcodeproj` | XcodeGen spec and the generated project for App Store archives |
