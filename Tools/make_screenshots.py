@@ -22,9 +22,14 @@ for an image. Edit captions here and nowhere else.
 
 PENDING A MAC: the Klingon and Belter personalities were withdrawn and two
 others renamed (fuzzybar#9), so their captures were deleted and the captions
-below rewritten. Nothing new needs shooting, but captioned/ was rendered
-before that change and still names them; re-run this script on a Mac before
-the next store upload.
+below rewritten. Nothing new needs shooting. captioned/03-personalities.png
+was rendered before that change, read "NINE PERSONALITIES" over the Klingon
+and Belter strips, and is **deleted rather than left in place**: it is the
+App Store upload, and a stale one there advertises the franchise names #9
+exists to remove. Run this script on a Mac to write it back. The other three
+frames are personality-agnostic and still current, so a partial run
+(`python3 Tools/make_screenshots.py 03-personalities`) is enough to restore
+it, though a full run costs nothing and keeps the set consistent.
 
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
