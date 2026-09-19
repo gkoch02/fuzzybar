@@ -20,6 +20,14 @@ Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
 for an image. Edit captions here and nowhere else.
 
+PENDING A MAC: the Warrior and Spacefarer personalities were renamed and
+rephrased off their franchise labels (fuzzybar#9), so the old Klingon and
+Belter captures were deleted rather than left showing words the app no
+longer says. Shoot menubar-warrior.png and menubar-spacefarer.png at 8:40
+pm, add them back to STRIPS and to the 03-personalities shot list, and
+re-run this script before the next store upload. Until then the captioned
+set in captioned/ is one re-run behind this file's captions.
+
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
 store's smallest size, 1280 x 800, and captures are placed at 1x (menubar
@@ -71,11 +79,11 @@ FRAMES = {
     ),
     "03-personalities": dict(
         eyebrow="Nine personalities",
-        headline="Plain spoken English, Shakespeare, Klingon, Belter, German, "
-                 "HAL 9000, Cthulhu, or Latin.",
-        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-klingon.png", 1.8, 32),
-               ("menubar-belter.png", 1.8, 32), ("menubar-hal.png", 1.8, 32),
-               ("menubar-cthulhu.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
+        headline="Plain spoken English, Shakespeare, Warrior, Spacefarer, German, "
+                 "Mission Control, Eldritch, or Latin.",
+        # menubar-warrior.png and menubar-spacefarer.png belong here once shot.
+        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-missioncontrol.png", 1.8, 32),
+               ("menubar-eldritch.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
         uniform=True,
     ),
     "04-settings": dict(
@@ -89,8 +97,10 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png", "menubar-klingon.png",
-          "menubar-belter.png", "menubar-hal.png", "menubar-cthulhu.png",
+# "menubar-warrior.png" and "menubar-spacefarer.png" go back in after
+# Warrior and Spacefarer are re-shot; see the note at the top of this file.
+STRIPS = ["menubar-spoken.png", "menubar-shakespeare.png",
+          "menubar-missioncontrol.png", "menubar-eldritch.png",
           "menubar-latin.png"]
 
 

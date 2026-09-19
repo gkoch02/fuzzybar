@@ -16,7 +16,7 @@ builds natively for Apple Silicon, and has no dependencies.
 ## Features
 
 - Time in words in the menubar, updated when the phrase changes
-- Nine personalities, from plain spoken English to Klingon, HAL 9000, and Cthulhu
+- Nine personalities, from plain spoken English to Warrior, Mission Control, and Eldritch
 - Popover with the exact time, full date, and a month calendar with week numbers
 - Start at login, via the system Login Items list
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
@@ -72,16 +72,25 @@ the other eight are ported from
 | Spoken (default) | `twenty to nine` | The way you'd say it out loud. |
 | Classic | `twenty to nine pm` | Plain English with am and pm; "just after" and "almost" at the edges. |
 | Shakespeare | `twenty 'fore nine of the clock` | Archaic English; drops am/pm as anachronistic. |
-| Klingon | `twenty 'til Hut rep` | Real tlhIngan Hol numerals; "rep" is Klingon for *hour*. |
-| Belter | `twenty to da nine bell, ya` | Lang Belta creole from *The Expanse*; nautical "bell" for time. |
+| Warrior | `twenty 'til skarn kaal` | An invented warrior tongue counting in tens; "kaal" is its word for *hour*. |
+| Spacefarer | `twenty off nine bells, aye` | Shipboard creole; hours struck in bells, minutes counted on and off. |
 | German | `zwanzig vor neun` | Standard High German; "halb zehn" anchors on the *next* hour. |
-| HAL 9000 | `T-20 MINUTES, 2100 HOURS` | Mission-control patter; 24-hour numeric time. |
-| Cthulhu | `twenty 'fore, the ninth hour` | Lovecraftian dread; ordinal hours; climaxes with "the stars are right". |
+| Mission Control | `T-20 MINUTES, 2100 HOURS` | Mission-control patter; 24-hour numeric time. |
+| Eldritch | `twenty 'fore, the ninth hour` | Cosmic dread; ordinal hours; climaxes with "the stars are right". |
 | Latin | `viginti ante hora IX p.m.` | Roman-numeral hours; real Latin prepositions. |
 
 <p align="center">
-  <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Seven menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; twenty 'til Hut rep; twenty to da nine bell, ya; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
+  <img src="Assets/screenshots/strips/personalities.png" width="442" alt="Five menubar strips stacked: twenty to nine; twenty 'fore nine of the clock; T-15 MINUTES, 2100 HOURS; quarter 'fore, the ninth hour; quadrans ante hora IX p.m.">
 </p>
+
+Five of the nine are in that stack. Four personalities were renamed off
+franchise labels before the store submission: Klingon, Belter, HAL 9000 and
+Cthulhu are now Warrior, Spacefarer, Mission Control and Eldritch. The first
+two were rephrased as well, since their wording quoted an invented language
+outright, so the old captures went with them; `Tools/make_screenshots.py`
+says what to shoot to put those two strips back. A preference written by an
+older build migrates on first launch, so nobody loses the personality they
+picked.
 
 The eight ported personalities share LittleFuzzyClock's twelve-slot table, so
 minutes 57 to 59 read "almost [next hour]" rather than flipping to the hour
