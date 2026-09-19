@@ -46,7 +46,10 @@ HEADLINE = (0xFF, 0xFF, 0xFF)
 # 1, shrunk only if the capture would not fit under the caption. A third
 # element crops the raw to that many points from the top before placing,
 # so menubar strips shot with different amounts of wallpaper line up.
-# `align="right"` right-aligns stacked shots so the menubar icons line up.
+# `uniform=True` crops every shot to the widest one's width, keeping the right
+# edge (where the menubar icons are) and extending a narrower capture's left
+# edge from its own first column, so strips of different widths come out
+# identical. `grid` lays several out in columns.
 # Window captures taken with ⇧⌘4 then Space carry their own shadow and
 # transparent margins; list those in PLAIN so they are placed untouched.
 FRAMES = {
@@ -64,10 +67,10 @@ FRAMES = {
         eyebrow="Nine personalities",
         headline="Plain spoken English, Shakespeare, Klingon, Belter, German, "
                  "HAL 9000, Cthulhu, or Latin.",
-        shots=[("menubar-shakespeare.png", 1.2, 46), ("menubar-klingon.png", 1.2, 46),
-               ("menubar-belter.png", 1.2, 46), ("menubar-hal.png", 1.2, 46),
-               ("menubar-cthulhu.png", 1.2, 46), ("menubar-latin.png", 1.2, 46)],
-        align="right",
+        shots=[("menubar-shakespeare.png", 1.8, 32), ("menubar-klingon.png", 1.8, 32),
+               ("menubar-belter.png", 1.8, 32), ("menubar-hal.png", 1.8, 32),
+               ("menubar-cthulhu.png", 1.8, 32), ("menubar-latin.png", 1.8, 32)],
+        uniform=True,
     ),
     "04-settings": dict(
         eyebrow="Small on purpose",
@@ -139,10 +142,27 @@ def shadowed(canvas, im, xy, blur, alpha):
     canvas.alpha_composite(im, xy)
 
 
-def place(raw, factor, s, avail, crop=None):
+def load(raw, s, crop=None):
     im = Image.open(SHOTS / raw).convert("RGBA")
     if crop:
         im = im.crop((0, 0, im.width, crop * s))
+    return im
+
+
+def equalize(ims):
+    width = max(im.width for im in ims)
+    out = []
+    for im in ims:
+        if im.width < width:
+            padded = Image.new("RGBA", (width, im.height))
+            padded.paste(im.crop((0, 0, 1, im.height)).resize((width - im.width, im.height)), (0, 0))
+            padded.paste(im, (width - im.width, 0))
+            im = padded
+        out.append(im)
+    return out
+
+
+def place(raw, im, factor, s, avail):
     if factor == "fit":
         factor = min(1, avail / im.height)
     if factor != 1:
@@ -168,9 +188,12 @@ def render(name, spec, s):
     top = y + 44 * s
 
     avail = H - top - int(H * 0.06)
-    shots = [place(shot[0], shot[1], s, avail, *shot[2:]) for shot in spec["shots"]]
+    raws = [load(shot[0], s, *shot[2:]) for shot in spec["shots"]]
+    if spec.get("uniform"):
+        raws = equalize(raws)
+    shots = [place(shot[0], im, shot[1], s, avail) for shot, im in zip(spec["shots"], raws)]
     plain = [im for im, shot in zip(shots, spec["shots"]) if shot[0] in PLAIN]
-    gap = 20 * s
+    gap = 28 * s
     cols = spec.get("grid", 1)
     rows = [shots[i:i + cols] for i in range(0, len(shots), cols)]
     block_h = sum(max(im.height for im in row) for row in rows) + gap * (len(rows) - 1)
