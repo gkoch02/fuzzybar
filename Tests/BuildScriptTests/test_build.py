@@ -1,4 +1,5 @@
 """Run with python3 -m unittest discover -s Tests/BuildScriptTests."""
+import json
 import os
 from pathlib import Path
 import shutil
@@ -60,15 +61,51 @@ class XcodeProjectTests(unittest.TestCase):
     """FuzzyBar.xcodeproj lists source files explicitly. It is generated from
     project.yml by `xcodegen generate` and committed, so a Swift file added
     on the SwiftPM side is silently missing from App Store archives until the
-    project is regenerated."""
+    project is regenerated. The check walks the project's group tree and each
+    target's Sources build phase, so a file that merely shares a basename
+    with a compiled one, or has a file reference but no build-phase entry,
+    still counts as missing."""
 
-    def test_every_swift_file_is_in_the_xcode_project(self):
+    EXPECTED = {"FuzzyBar": "Sources/FuzzyBar", "FuzzyBarTests": "Tests/FuzzyBarTests"}
+
+    @staticmethod
+    def compiled_sources(pbxproj):
+        objects = json.loads(subprocess.run(
+            ["plutil", "-convert", "json", "-o", "-", str(pbxproj)],
+            capture_output=True, text=True, check=True,
+        ).stdout)["objects"]
+        project = next(o for o in objects.values() if o["isa"] == "PBXProject")
+
+        paths = {}
+
+        def walk(ref, prefix):
+            obj = objects[ref]
+            here = prefix / obj["path"] if obj.get("path") else prefix
+            if obj["isa"] == "PBXFileReference":
+                paths[ref] = here
+            else:
+                for child in obj.get("children", []):
+                    walk(child, here)
+
+        walk(project["mainGroup"], Path())
+
+        result = {}
+        for ref in project["targets"]:
+            target = objects[ref]
+            files = set()
+            for phase in target["buildPhases"]:
+                if objects[phase]["isa"] == "PBXSourcesBuildPhase":
+                    for build_file in objects[phase]["files"]:
+                        files.add(str(paths[objects[build_file]["fileRef"]]))
+            result[target["name"]] = files
+        return result
+
+    def test_every_swift_file_is_compiled_by_its_target(self):
         root = Path(__file__).resolve().parents[2]
-        pbxproj = (root / "FuzzyBar.xcodeproj/project.pbxproj").read_text()
-        missing = sorted(
-            str(path.relative_to(root))
-            for folder in ("Sources", "Tests/FuzzyBarTests")
-            for path in (root / folder).rglob("*.swift")
-            if path.name not in pbxproj
-        )
-        self.assertEqual(missing, [], "run `xcodegen generate` and commit the project")
+        compiled = self.compiled_sources(root / "FuzzyBar.xcodeproj/project.pbxproj")
+        for target, folder in self.EXPECTED.items():
+            on_disk = {str(p.relative_to(root)) for p in (root / folder).rglob("*.swift")}
+            self.assertEqual(
+                compiled.get(target), on_disk,
+                f"{target}: run `xcodegen generate` and commit the project",
+            )
