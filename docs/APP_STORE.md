@@ -1,7 +1,10 @@
 # App Store — the release record
 
 > **Status: not yet submitted.** Bundle ID `dev.plumpbug.fuzzybar` · team `FGG98L437R`
-> · free, no in-app purchases · macOS 14 Sonoma or later.
+> · **$0.99, paid up front**, no in-app purchases · macOS 14 Sonoma or later.
+> The source stays free under MIT; the store price buys a signed build the store
+> installs and updates. The plumpbug.dev pages say the same (site commit
+> "Price FuzzyBar at $0.99 on the Mac App Store", September 18, 2026).
 >
 > The code-side work is done (§0) and a store-signed `.pkg` has been produced from
 > this repo (September 18, 2026). What remains is App Store Connect: the app record,
@@ -77,6 +80,12 @@ Live already, served from the `plumpbug-site` repo at `docs/fuzzybar/`:
       the personality picker (PR #2) is merged, the app stores one preference, the
       chosen personality, in its own `UserDefaults`, on this Mac only. Say so. The
       manifest (§0) and the App Privacy answers (§4) already assume it.
+- [ ] **Fix the entitlements sentence on the privacy page.** It says the
+      "hardened-runtime entitlements file is empty because it needs no entitlements".
+      Since #3 the file enables App Sandbox, and a sandboxed store build keeps its
+      preferences at `~/Library/Containers/dev.plumpbug.fuzzybar/Data/Library/Preferences/`
+      rather than `~/Library/Preferences/` (the `build.sh` build, which is not
+      sandboxed, still uses the latter). The data-deletion section names the path.
 - [ ] Load all three URLs after the site deploys. Reviewers open them; a broken
       privacy URL blocks review.
 
@@ -92,8 +101,16 @@ Live already, served from the `plumpbug-site` repo at `docs/fuzzybar/`:
       ID `dev.plumpbug.fuzzybar`, SKU `fuzzybar`. The name check happens here and
       nowhere else; if "FuzzyBar" is taken, "FuzzyBar: Time in Words" is the
       fallback, and the display name in the app can stay as it is.
-- [ ] **EU trader status** — choose whatever Nightdraft and Between Us chose.
-- [x] **No Paid Applications Agreement needed** — free, no IAP.
+- [ ] **Paid Applications Agreement** — required, because this is the first paid app
+      in the family. Agreements, Tax, and Banking → accept the Paid Apps agreement,
+      then complete the bank account, tax forms (W-9 for a U.S. individual) and
+      contact roles. Nothing can go on sale until the agreement shows "Active", and
+      Apple's review of the tax forms can take days, so start this before anything
+      else in this section.
+- [ ] **EU trader status** — choose whatever Nightdraft and Between Us chose. A paid
+      app makes the DSA trader question less avoidable than it was for the free ones:
+      selling in EU storefronts publishes your name, address and phone number on the
+      product page. Deselect EU storefronts if that is not acceptable.
 
 ---
 
@@ -144,6 +161,10 @@ Requires macOS 14 Sonoma or later. Open source under the MIT license.
 
 **What's New** (1.0) — `First release.`
 
+**Price** — Tier 1, **$0.99 USD**, with Apple's automatic equivalents elsewhere.
+Availability: all storefronts except any deselected under EU trader status (§2).
+No introductory offers, no IAP.
+
 **Version** `1.0` · **Build** `1` (from `Info.plist`; bump both there and in
 `project.yml` together).
 
@@ -172,8 +193,10 @@ Personality picker that changes the phrasing, and a Start at login toggle that
 registers the app with the system Login Items list via SMAppService.
 
 The app has no networking code, no account, no analytics and no in-app
-purchases. It runs in the App Sandbox with no entitlements beyond the sandbox
-itself. Source: https://github.com/gkoch02/fuzzybar
+purchases; it is paid up front. It runs in the App Sandbox with no entitlements
+beyond the sandbox itself. The same source is public under MIT at
+https://github.com/gkoch02/fuzzybar; the store build is the signed, universal
+(Apple silicon and Intel) binary with automatic updates.
 ```
 
 **Sign-in required** — No. **Contact** — the developer account's name, phone and
