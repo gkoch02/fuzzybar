@@ -3,6 +3,7 @@ import ServiceManagement
 
 struct SettingsView: View {
     @StateObject private var login = LoginSettings()
+    @EnvironmentObject private var clock: Clock
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
@@ -25,6 +26,24 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 6)
             }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Picker("Personality", selection: $clock.personality) {
+                    ForEach(Personality.allCases) { Text($0.title).tag($0) }
+                }
+                Text(clock.personality.note)
+                    .font(.caption).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(FuzzyTime.phrase(hour: 20, minute: 40, personality: clock.personality))
+                    .font(.callout.monospaced())
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(8)
+                    .background(RoundedRectangle(cornerRadius: 6).fill(Color.primary.opacity(0.06)))
+                    .accessibilityLabel("Example at 8:40 pm")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Divider()
 
