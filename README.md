@@ -105,7 +105,8 @@ approval states, and build-script failure handling.
 | `Sources/FuzzyBar/Clock.swift` | Phrase-boundary ticker (minute updates while the popover is open) |
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |
-| `Assets/` | Icon renderer and the generated `.icns` |
+| `Assets/` | Icon renderer, the generated `.icns`, and the store screenshots (raws plus captioned set) |
+| `Tools/make_screenshots.py` | Renders the captioned screenshots from the raws |
 | `Resources/` | Asset catalog (app icon) and the privacy manifest for the Xcode build |
 | `build.sh` | Builds, signs, and optionally installs the app bundle |
 | `project.yml`, `FuzzyBar.xcodeproj` | XcodeGen spec and the generated project for App Store archives |

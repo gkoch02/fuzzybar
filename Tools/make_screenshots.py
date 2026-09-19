@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""Composite the captioned Mac App Store screenshot set.
+
+Reads the raw captures in Assets/screenshots/ (the source of truth: retake
+those on a Mac, ⇧⌘4, not in a simulator) and renders a captioned frame for
+each into Assets/screenshots/captioned/, on a canvas App Store Connect
+accepts for macOS. The caption sits above the capture, which sits on a
+ground taken from the app icon's indigo gradient (Assets/make_icon.swift).
+
+    python3 Tools/make_screenshots.py              # every frame
+    python3 Tools/make_screenshots.py 01-menubar   # one
+
+Every phrase is lifted from the listing copy already through review (the
+subtitle, the promotional text, the description). Nothing is written fresh
+for an image. Edit captions here and nowhere else.
+
+The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
+strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
+store's smallest size, 1280 x 800, and captures are placed at 1x (menubar
+crops at 2x, since a 360 px strip is otherwise a sliver). At 2x the canvas
+is 2560 x 1600 and everything scales with it, which is the set to ship.
+
+Lineage: Nightdraft's Tools/make_screenshots.py, itself from HippoChomp and
+Between Us, with the panel voice swapped for this app's. Needs Pillow.
+"""
+
+import sys
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+ROOT = Path(__file__).resolve().parent.parent
+SHOTS = ROOT / "Assets" / "screenshots"
+OUT = SHOTS / "captioned"
+
+# San Francisco, as macOS ships it: the app's own face.
+SF = "/System/Library/Fonts/SFNS.ttf"
+
+# The icon's gradient (make_icon.swift): deep indigo to violet.
+GROUND = ((0x2A, 0x22, 0x8C), (0x1A, 0x14, 0x5E))
+EYEBROW = (0xC9, 0xC3, 0xF5)
+HEADLINE = (0xFF, 0xFF, 0xFF)
+
+# One frame per entry, in store order. `shots` lists raw filenames and the
+# factor each is placed at (relative to the raw's own scale); "fit" means
+# 1, shrunk only if the capture would not fit under the caption. A third
+# element crops the raw to that many points from the top before placing,
+# so menubar strips shot with different amounts of wallpaper line up.
+# `align="right"` right-aligns stacked shots so the menubar icons line up.
+# Window captures taken with ⇧⌘4 then Space carry their own shadow and
+# transparent margins; list those in PLAIN so they are placed untouched.
+FRAMES = {
+    "01-menubar": dict(
+        eyebrow="The time, in words",
+        headline="Instead of 8:38, your menubar reads “twenty to nine”.",
+        shots=[("menubar-spoken.png", 2, 120)],
+    ),
+    "02-popover": dict(
+        eyebrow="Click it",
+        headline="Exact time, full date, and a month calendar one click away.",
+        shots=[("popover.png", "fit")],
+    ),
+    "03-personalities": dict(
+        eyebrow="Nine personalities",
+        headline="Plain spoken English, Shakespeare, Klingon, Belter, German, "
+                 "HAL 9000, Cthulhu, or Latin.",
+        shots=[("menubar-shakespeare.png", 1.2, 46), ("menubar-klingon.png", 1.2, 46),
+               ("menubar-belter.png", 1.2, 46), ("menubar-hal.png", 1.2, 46),
+               ("menubar-cthulhu.png", 1.2, 46), ("menubar-latin.png", 1.2, 46)],
+        align="right",
+    ),
+    "04-settings": dict(
+        eyebrow="Small on purpose",
+        headline="No Dock icon, no network, no analytics, no account.",
+        shots=[("settings.png", "fit")],
+    ),
+}
+
+
+PLAIN = {"settings.png"}
+
+
+def raw_scale():
+    return 2 if Image.open(SHOTS / "menubar-spoken.png").width > 600 else 1
+
+
+def font(size, weight):
+    f = ImageFont.truetype(SF, size)
+    f.set_variation_by_name(weight)
+    return f
+
+
+def gradient(size, top, bottom):
+    strip = Image.new("RGB", (1, size[1]))
+    px = strip.load()
+    for y in range(size[1]):
+        t = y / (size[1] - 1)
+        px[0, y] = tuple(round(a + (b - a) * t) for a, b in zip(top, bottom))
+    return strip.resize(size)
+
+
+def wrap(draw, text, fnt, width):
+    """Balanced word wrap: as few lines as fit, then the narrowest measure
+    that still gives that many, so no line is left holding one word."""
+    def greedy(w):
+        lines, line = [], []
+        for word in text.split():
+            trial = " ".join(line + [word])
+            if line and draw.textlength(trial, font=fnt) > w:
+                lines.append(" ".join(line))
+                line = [word]
+            else:
+                line.append(word)
+        lines.append(" ".join(line))
+        return lines
+    lines = greedy(width)
+    while True:
+        width -= 8
+        tighter = greedy(width)
+        if len(tighter) > len(lines):
+            return lines
+        lines = tighter
+
+
+def rounded(im, radius):
+    mask = Image.new("L", im.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), radius, fill=255)
+    out = im.convert("RGBA")
+    out.putalpha(mask)
+    return out
+
+
+def shadowed(canvas, im, xy, blur, alpha):
+    shadow = Image.new("RGBA", (im.width + blur * 4, im.height + blur * 4), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).rounded_rectangle(
+        (blur * 2, blur * 2, blur * 2 + im.width, blur * 2 + im.height), 12, fill=(0, 0, 0, alpha))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(blur))
+    canvas.alpha_composite(shadow, (xy[0] - blur * 2, xy[1] - blur * 2 + blur // 2))
+    canvas.alpha_composite(im, xy)
+
+
+def place(raw, factor, s, avail, crop=None):
+    im = Image.open(SHOTS / raw).convert("RGBA")
+    if crop:
+        im = im.crop((0, 0, im.width, crop * s))
+    if factor == "fit":
+        factor = min(1, avail / im.height)
+    if factor != 1:
+        im = im.resize((round(im.width * factor), round(im.height * factor)), Image.LANCZOS)
+    return im if raw in PLAIN else rounded(im, 10 * s)
+
+
+def render(name, spec, s):
+    W, H = 1280 * s, 800 * s
+    img = gradient((W, H), *GROUND).convert("RGBA")
+    d = ImageDraw.Draw(img)
+    margin = int(W * 0.06)
+
+    eb_font = font(22 * s, "Semibold")
+    y = int(H * 0.085)
+    d.text((W // 2, y), spec["eyebrow"].upper(), font=eb_font, fill=EYEBROW, anchor="ms")
+    hl_font = font(44 * s, "Bold")
+    lines = wrap(d, spec["headline"], hl_font, W - 2 * margin)
+    y += 20 * s
+    for line in lines:
+        y += 54 * s
+        d.text((W // 2, y), line, font=hl_font, fill=HEADLINE, anchor="ms")
+    top = y + 44 * s
+
+    avail = H - top - int(H * 0.06)
+    shots = [place(shot[0], shot[1], s, avail, *shot[2:]) for shot in spec["shots"]]
+    plain = [im for im, shot in zip(shots, spec["shots"]) if shot[0] in PLAIN]
+    gap = 20 * s
+    cols = spec.get("grid", 1)
+    rows = [shots[i:i + cols] for i in range(0, len(shots), cols)]
+    block_h = sum(max(im.height for im in row) for row in rows) + gap * (len(rows) - 1)
+    if block_h > avail:  # never crop; a frame that does not fit is a spec error
+        raise SystemExit(f"{name}: captures need {block_h}px, only {avail}px below the caption")
+    y = top + (avail - block_h) // 2
+    right_edge = (W + max(im.width for im in shots)) // 2
+    for row in rows:
+        row_w = sum(im.width for im in row) + gap * (len(row) - 1)
+        x = right_edge - row_w if spec.get("align") == "right" else (W - row_w) // 2
+        for im in row:
+            if any(im is p for p in plain):
+                img.alpha_composite(im, (x, y))
+            else:
+                shadowed(img, im, (x, y), blur=8 * s, alpha=110)
+            x += im.width + gap
+        y += max(im.height for im in row) + gap
+
+    OUT.mkdir(exist_ok=True)
+    img.convert("RGB").save(OUT / f"{name}.png", optimize=True)
+    print(f"wrote {OUT.relative_to(ROOT)}/{name}.png {img.width}x{img.height}")
+
+
+def main(argv):
+    wanted = argv[1:] or list(FRAMES)
+    s = raw_scale()
+    for name in wanted:
+        if name not in FRAMES:
+            raise SystemExit(f"unknown frame {name!r}; choose from {', '.join(FRAMES)}")
+        render(name, FRAMES[name], s)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
