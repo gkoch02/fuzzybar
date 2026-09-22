@@ -9,6 +9,10 @@ A tiny native macOS menubar clock that tells the time in words.
 Click it for the exact time, today's date, a month calendar, and a couple of
 menu items. That's the whole app.
 
+**[Get it on the Mac App Store](https://apps.apple.com/us/app/id6813746171)** for
+$0.99, a signed universal build the store installs and keeps updated, or build it
+yourself for free from this repository (below). It's the same app either way.
+
 FuzzyBar exists because the fuzzy clock I'd used for years stopped getting
 updates and still ran under Rosetta. This one is a few hundred lines of Swift,
 builds natively for Apple Silicon, and has no dependencies.
@@ -24,7 +28,8 @@ builds natively for Apple Silicon, and has no dependencies.
 ## Requirements
 
 - macOS 14 Sonoma or later
-- Xcode 15 or later (command line tools are enough) to build from source
+- Xcode 15 or later (command line tools are enough) to build from source; the
+  [Mac App Store](https://apps.apple.com/us/app/id6813746171) build needs nothing else
 
 ## Build and install
 
