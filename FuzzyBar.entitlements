@@ -2,10 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- App Sandbox is required for the Mac App Store. FuzzyBar needs no
-         exceptions: no files, no network, no hardware. The login item goes
-         through SMAppService.mainApp, which works inside the sandbox. -->
+    <!-- App Sandbox is required for the Mac App Store. FuzzyBar needs one
+         exception: it reads and writes files the user picks in an open or
+         save panel (custom personalities), and no others. No network, no
+         hardware. The login item goes through SMAppService.mainApp, which
+         works inside the sandbox. -->
     <key>com.apple.security.app-sandbox</key>
+    <true/>
+    <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
 </dict>
 </plist>

@@ -5,6 +5,7 @@ struct SettingsView: View {
     @StateObject private var login = LoginSettings()
     @EnvironmentObject private var clock: Clock
     @EnvironmentObject private var sun: SunSettings
+    @State private var personalityMessage: PersonalityMessage?
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
@@ -30,21 +31,7 @@ struct SettingsView: View {
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Picker("Personality", selection: $clock.personality) {
-                    ForEach(Personality.allCases) { Text($0.title).tag($0) }
-                }
-                Text(clock.personality.note)
-                    .font(.caption).foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(FuzzyTime.phrase(hour: 20, minute: 40, personality: clock.personality))
-                    .font(.callout.monospaced())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(8)
-                    .background(RoundedRectangle(cornerRadius: 6).fill(Color.primary.opacity(0.06)))
-                    .accessibilityLabel("Example at 8:40 pm")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            PersonalitySection(message: $personalityMessage)
 
             Divider()
 
@@ -82,6 +69,12 @@ struct SettingsView: View {
         .padding(24)
         .frame(width: 320)
         .background(SettingsWindow.Reader())
+        // A personality file dropped anywhere on the window imports it.
+        .dropDestination(for: URL.self) { urls, _ in
+            guard let url = urls.first else { return false }
+            personalityMessage = clock.importPersonality(from: url)
+            return true
+        }
         .onAppear { login.refresh() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             login.refresh()
@@ -131,6 +124,14 @@ extension SettingsView {
 enum SettingsWindow {
     static weak var current: NSWindow?
 
+    /// AppKit gives the first editable control keyboard focus when the window
+    /// opens, which lit up the special-times hour as if it were selected.
+    /// Start with nothing focused; Tab still moves into the controls. Async,
+    /// because SwiftUI assigns that focus after the window is ordered in.
+    static func clearFocus(_ window: NSWindow) {
+        DispatchQueue.main.async { window.makeFirstResponder(nil) }
+    }
+
     struct Reader: NSViewRepresentable {
         func makeNSView(context: Context) -> NSView { View() }
         func updateNSView(_ nsView: NSView, context: Context) {}
@@ -141,6 +142,7 @@ enum SettingsWindow {
                 guard let window, window !== SettingsWindow.current else { return }
                 SettingsWindow.current = window
                 window.center()
+                SettingsWindow.clearFocus(window)
             }
         }
     }
