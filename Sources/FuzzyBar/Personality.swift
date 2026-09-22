@@ -11,7 +11,7 @@ import Foundation
 /// and Eldritch. Klingon and Belter went further than a name: their phrases
 /// were tlhIngan Hol numerals and Lang Belta particles, the languages
 /// themselves rather than a reference to them. Both are withdrawn rather
-/// than rewritten, so the app ships seven.
+/// than rewritten. Vague, FuzzyBar's own, came later.
 enum Personality: String, CaseIterable, Identifiable {
     case spoken
     case classic
@@ -20,6 +20,7 @@ enum Personality: String, CaseIterable, Identifiable {
     case missionControl
     case eldritch
     case latin
+    case vague
 
     static let `default`: Personality = .spoken
     static let defaultsKey = "personality"
@@ -53,6 +54,7 @@ enum Personality: String, CaseIterable, Identifiable {
         case .missionControl: return "Mission Control"
         case .eldritch: return "Eldritch"
         case .latin: return "Latin"
+        case .vague: return "Vague"
         }
     }
 
@@ -66,14 +68,16 @@ enum Personality: String, CaseIterable, Identifiable {
         case .missionControl: return "Mission-control patter in 24-hour time."
         case .eldritch: return "Cosmic dread; climaxes with \"the stars are right\"."
         case .latin: return "Roman-numeral hours and real Latin prepositions."
+        case .vague: return "Just the part of the day; the hour is your problem."
         }
     }
 
     /// The twelve five-minute slots, index 0 = on the hour, 11 = "almost".
-    /// `nil` for the spoken personality, which has its own thirteen-slot logic.
+    /// `nil` for the spoken personality, which has its own thirteen-slot logic,
+    /// and for vague, which ignores the minutes (see `vagueParts`).
     var slotPhrases: [String]? {
         switch self {
-        case .spoken:
+        case .spoken, .vague:
             return nil
         case .classic:
             return ["just after", "a little past", "ten past", "quarter past", "twenty past",
@@ -101,6 +105,20 @@ enum Personality: String, CaseIterable, Identifiable {
                     "quadrans ante", "decem ante", "fere"]
         }
     }
+
+    /// Vague's parts of the day as (start, phrase), start in minutes after
+    /// midnight, ascending. Each runs until the next one starts; the first
+    /// also covers the small hours before "early".
+    static let vagueParts: [(start: Int, phrase: String)] = [
+        (0, "way too late"),
+        (5 * 60, "early"),
+        (7 * 60, "morning"),
+        (11 * 60 + 30, "around noon"),
+        (13 * 60, "after lunch"),
+        (15 * 60, "afternoon"),
+        (18 * 60, "evening"),
+        (21 * 60, "late"),
+    ]
 
     /// The slot at which the displayed hour flips to the next one. German's
     /// "fünf vor halb zehn" already names the next hour at 25 past, so it
@@ -139,7 +157,7 @@ enum Personality: String, CaseIterable, Identifiable {
         let index = h24 % 12  // 0 = twelve
         let isPM = h24 >= 12
         switch self {
-        case .spoken, .classic:
+        case .spoken, .classic, .vague:
             return "\(Self.englishHours[index]) \(isPM ? "pm" : "am")"
         case .shakespeare:
             return "\(Self.englishHours[index]) of the clock"

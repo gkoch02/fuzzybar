@@ -91,10 +91,60 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(23, 58, .latin), "fere hora XII a.m.")
     }
 
+    func testVagueNamesThePartOfTheDay() {
+        XCTAssertEqual(p(0, 0, .vague), "way too late")
+        XCTAssertEqual(p(4, 59, .vague), "way too late")
+        XCTAssertEqual(p(5, 0, .vague), "early")
+        XCTAssertEqual(p(6, 59, .vague), "early")
+        XCTAssertEqual(p(7, 0, .vague), "morning")
+        XCTAssertEqual(p(11, 29, .vague), "morning")
+        XCTAssertEqual(p(11, 30, .vague), "around noon")
+        XCTAssertEqual(p(12, 59, .vague), "around noon")
+        XCTAssertEqual(p(13, 0, .vague), "after lunch")
+        XCTAssertEqual(p(15, 0, .vague), "afternoon")
+        XCTAssertEqual(p(18, 0, .vague), "evening")
+        XCTAssertEqual(p(20, 40, .vague), "evening")
+        XCTAssertEqual(p(20, 59, .vague), "evening")
+        XCTAssertEqual(p(21, 0, .vague), "late")
+        XCTAssertEqual(p(23, 59, .vague), "late")
+    }
+
+    /// Every minute of the day reads one of the parts, and the parts come
+    /// round in order with no gaps: eight changes a day, one per part.
+    func testVagueCoversTheDayInOrder() {
+        let parts = Personality.vagueParts
+        XCTAssertEqual(parts.first?.start, 0)
+        XCTAssertEqual(parts.map(\.start), parts.map(\.start).sorted())
+        var seen: [String] = []
+        for minute in 0..<(24 * 60) {
+            let text = p(minute / 60, minute % 60, .vague)
+            if seen.last != text { seen.append(text) }
+        }
+        XCTAssertEqual(seen, parts.map(\.phrase))
+    }
+
+    /// Vague holds one phrase for hours, so the ticker should wake at the
+    /// next part and otherwise sleep in its usual five-minute steps.
+    @MainActor
+    func testVagueTicksAtPartBoundaries() {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        func at(_ hour: Int, _ minute: Int) -> Date {
+            cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: hour, minute: minute))!
+        }
+        func tick(_ date: Date) -> Date {
+            Clock.nextTick(after: date, popoverVisible: false, calendar: cal, personality: .vague)
+        }
+        XCTAssertEqual(tick(at(11, 27)), at(11, 30).addingTimeInterval(0.05))
+        XCTAssertEqual(tick(at(20, 58)), at(21, 0).addingTimeInterval(0.05))
+        XCTAssertEqual(tick(at(23, 59)), at(24, 0).addingTimeInterval(0.05))
+        XCTAssertEqual(tick(at(9, 0)), at(9, 5).addingTimeInterval(0.05))
+    }
+
     /// Minutes 57-59 must name the *next* hour in every personality; the
     /// slot cap at 11 is what keeps them from wrapping to "just after".
     func testAlmostNextHourNeverWraps() {
-        for personality in Personality.allCases where personality != .spoken {
+        for personality in Personality.allCases where personality.slotPhrases != nil {
             let slots = personality.slotPhrases!
             for hour in 0..<24 {
                 for minute in 57...59 {
@@ -108,7 +158,7 @@ final class PersonalityTests: XCTestCase {
     }
 
     func testEveryMinuteUsesKnownVocabulary() {
-        for personality in Personality.allCases where personality != .spoken {
+        for personality in Personality.allCases where personality.slotPhrases != nil {
             let slots = personality.slotPhrases!
             XCTAssertEqual(slots.count, 12, "\(personality)")
             XCTAssertTrue((1...11).contains(personality.hourAdvanceSlot), "\(personality)")
@@ -165,11 +215,11 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
     }
 
-    func testSevenPersonalitiesShip() {
-        XCTAssertEqual(Personality.allCases.count, 7)
+    func testEightPersonalitiesShip() {
+        XCTAssertEqual(Personality.allCases.count, 8)
         XCTAssertEqual(Personality.allCases.map(\.rawValue),
                        ["spoken", "classic", "shakespeare", "german",
-                        "missionControl", "eldritch", "latin"])
+                        "missionControl", "eldritch", "latin", "vague"])
     }
 
     /// Two personalities were renamed off their franchise labels before the
@@ -228,7 +278,7 @@ final class PersonalityTests: XCTestCase {
         func at(_ minute: Int) -> Date {
             cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: minute))!
         }
-        let ported = Personality.allCases.filter { $0 != .spoken }
+        let ported = Personality.allCases.filter { $0.slotPhrases != nil }
         for minute in [0, 2, 3, 22, 23, 27, 28, 52, 57] {
             let expected = Clock.nextTick(after: at(minute), popoverVisible: false, calendar: cal, personality: .classic)
             for personality in ported {
