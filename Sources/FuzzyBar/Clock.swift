@@ -13,6 +13,12 @@ final class Clock: ObservableObject {
             scheduleNextTick()
         }
     }
+    @Published var specialTimes: [SpecialTime] {
+        didSet {
+            SpecialTimes.save(specialTimes, to: defaults)
+            scheduleNextTick()
+        }
+    }
     private let defaults: UserDefaults
     private var timer: Timer?
     private var observers: [(NotificationCenter, NSObjectProtocol)] = []
@@ -25,6 +31,7 @@ final class Clock: ObservableObject {
         now = dateProvider()
         let saved = defaults.string(forKey: Personality.defaultsKey)
         personality = saved.flatMap(Personality.stored) ?? .default
+        specialTimes = SpecialTimes.load(from: defaults)
         // A pre-rename value ("hal", "cthulhu") reads back as the personality
         // it became, and a withdrawn one ("klingon", "belter") reads back as
         // the default; either way write the current spelling so it only
@@ -43,7 +50,14 @@ final class Clock: ObservableObject {
         for (center, token) in observers { center.removeObserver(token) }
     }
 
-    var fuzzy: String { FuzzyTime.phrase(for: now, personality: personality) }
+    var fuzzy: String { Self.text(for: now, personality: personality, specialTimes: specialTimes) }
+
+    /// What the menubar reads at `date`: a special time, else the phrase.
+    nonisolated static func text(for date: Date, calendar: Calendar = .current, personality: Personality,
+                     specialTimes: [SpecialTime]) -> String {
+        SpecialTimes.text(for: date, calendar: calendar, userTimes: specialTimes)
+            ?? FuzzyTime.phrase(for: date, calendar: calendar, personality: personality)
+    }
 
     /// When the pending tick fires; exposed for tests.
     var timerFireDate: Date? { timer?.fireDate }
@@ -66,13 +80,18 @@ final class Clock: ObservableObject {
     }
 
     /// Search actual minute boundaries so DST and non-whole-hour time zones work.
+    /// Special times last one minute, so they show up here as a change at
+    /// their start and another at their end, like any phrase boundary.
     static func nextTick(after date: Date, popoverVisible: Bool, calendar: Calendar = .current,
-                         personality: Personality = .default) -> Date {
+                         personality: Personality = .default, specialTimes: [SpecialTime] = []) -> Date {
         let minuteStart = calendar.dateInterval(of: .minute, for: date)!.start
-        let phrase = FuzzyTime.phrase(for: date, calendar: calendar, personality: personality)
+        func text(_ d: Date) -> String {
+            Self.text(for: d, calendar: calendar, personality: personality, specialTimes: specialTimes)
+        }
+        let phrase = text(date)
         for offset in 1...5 {
             let candidate = minuteStart.addingTimeInterval(Double(offset) * 60)
-            if popoverVisible || FuzzyTime.phrase(for: candidate, calendar: calendar, personality: personality) != phrase {
+            if popoverVisible || text(candidate) != phrase {
                 return candidate.addingTimeInterval(0.05)
             }
         }
@@ -81,7 +100,8 @@ final class Clock: ObservableObject {
 
     private func scheduleNextTick() {
         timer?.invalidate()
-        let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible, personality: personality)
+        let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible,
+                                     personality: personality, specialTimes: specialTimes)
         let t = Timer(fire: fireDate, interval: 0, repeats: false) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
         }
