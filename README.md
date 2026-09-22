@@ -3,7 +3,7 @@
 A tiny native macOS menubar clock that tells the time in words.
 
 <p align="center">
-  <img src="Assets/screenshots/popover.png" width="498" alt="The menubar reading “twenty to nine”, with FuzzyBar's popover open below it: 8:42 PM, the full date, a September calendar with week numbers, and Preferences and Quit.">
+  <img src="Assets/screenshots/popover.png" width="465" alt="The menubar reading “ten to four”, with FuzzyBar's popover open below it: 3:50 PM, the full date, sunrise around twenty to seven and sunset around ten to seven, a September calendar with week numbers, and Preferences and Quit.">
 </p>
 
 Click it for the exact time, today's date, a month calendar, and a couple of
@@ -114,14 +114,15 @@ FuzzyBar's own. All shown at 8:40 pm:
 | Vague | `evening` | Just the part of the day, from *early* round to *way too late*. |
 
 <p align="center">
-  <img src="Assets/screenshots/strips/personalities.png" width="432" alt="Seven menubar strips stacked, one per personality, every one at 8:44 am: quarter to nine; quarter to nine am; a quarter ’fore nine of the clock; viertel vor neun; T-15 MINUTES, 0900 HOURS; quarter ’fore, the ninth hour; quadrans ante hora IX a.m.">
+  <img src="Assets/screenshots/strips/personalities.png" width="432" alt="Eight menubar strips stacked, one per personality. The first seven at 8:44 am: quarter to nine; quarter to nine am; a quarter ’fore nine of the clock; viertel vor neun; T-15 MINUTES, 0900 HOURS; quarter ’fore, the ninth hour; quadrans ante hora IX a.m. The last, Vague, at 3:50 pm: afternoon.">
 </p>
 
-The first seven are in that stack, shot in one sitting with the rest of the menubar
-hidden, so the difference between any two rows is the personality and nothing
-else. The table above is 8:40 pm because that is what Preferences previews;
-the strips are 8:44 am because that is when they were taken. Vague came
-after the shoot; at 8:44 am it would have said `morning`.
+The first seven rows were shot in one sitting with the rest of the menubar
+hidden, so the difference between any two of them is the personality and
+nothing else. The table above is 8:40 pm because that is what Preferences
+previews; the strips are 8:44 am because that is when they were taken. Vague,
+the last row, came later and was shot at 3:50 pm. It names no hour, so it
+doesn't contradict the others, but at 8:44 am it would have said `morning`.
 
 There were nine until the store submission, and four of them carried
 franchise names. HAL 9000 and Cthulhu had borrowed only the label, so they

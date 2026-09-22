@@ -20,11 +20,13 @@ Every phrase is lifted from the listing copy already through review (the
 subtitle, the promotional text, the description). Nothing is written fresh
 for an image. Edit captions here and nowhere else.
 
-The raws are one sitting: all seven personalities shot at 8:44 am on
+The raws are one sitting: the first seven personalities shot at 8:44 am on
 2026-09-19, with the other menubar items hidden, so every strip reads the
 same moment and differs only in the phrase. Reshooting one alone will show,
 because the phrase changes with the clock; retake the set together, and
-crop each to the right 880 px of the bar.
+crop each to the right 880 px of the bar. Vague came later (3:50 pm on
+2026-09-22, "afternoon"); it names no hour, so its strip sits with the
+others without contradicting them.
 
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
@@ -74,17 +76,17 @@ FRAMES = {
     ),
     "02-popover": dict(
         eyebrow="Click it",
-        headline="Exact time, full date, and a month calendar one click away.",
+        headline="Exact time, full date, sunrise and sunset, and a month calendar.",
         shots=[("popover.png", "fit")],
     ),
     "03-personalities": dict(
-        eyebrow="Seven personalities",
+        eyebrow="Eight personalities, or write your own",
         headline="Plain spoken English, Classic, Shakespeare, German, "
-                 "Mission Control, Eldritch, or Latin.",
-        shots=[("menubar-spoken.png", 1.35, 32), ("menubar-classic.png", 1.35, 32),
-               ("menubar-shakespeare.png", 1.35, 32), ("menubar-german.png", 1.35, 32),
-               ("menubar-missioncontrol.png", 1.35, 32), ("menubar-eldritch.png", 1.35, 32),
-               ("menubar-latin.png", 1.35, 32)],
+                 "Mission Control, Eldritch, Latin, or Vague.",
+        shots=[("menubar-spoken.png", 1.2, 32), ("menubar-classic.png", 1.2, 32),
+               ("menubar-shakespeare.png", 1.2, 32), ("menubar-german.png", 1.2, 32),
+               ("menubar-missioncontrol.png", 1.2, 32), ("menubar-eldritch.png", 1.2, 32),
+               ("menubar-latin.png", 1.2, 32), ("menubar-vague.png", 1.2, 32)],
         uniform=True,
     ),
     "04-settings": dict(
@@ -98,10 +100,9 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-# All seven, since Classic and German were finally shot.
 STRIPS = ["menubar-spoken.png", "menubar-classic.png", "menubar-shakespeare.png",
           "menubar-german.png", "menubar-missioncontrol.png", "menubar-eldritch.png",
-          "menubar-latin.png"]
+          "menubar-latin.png", "menubar-vague.png"]
 
 
 def raw_scale():
