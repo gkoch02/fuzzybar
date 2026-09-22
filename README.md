@@ -20,7 +20,7 @@ builds natively for Apple Silicon, and has no dependencies.
 ## Features
 
 - Time in words in the menubar, updated when the phrase changes
-- Seven personalities, from plain spoken English to Mission Control and Eldritch
+- Eight personalities, from plain spoken English to Mission Control, Eldritch, and Vague
 - Popover with the exact time, full date, and a month calendar with week numbers
 - Start at login, via the system Login Items list
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
@@ -68,9 +68,9 @@ hour. So 8:38 is "twenty to nine" and 8:37 is "twenty-five to nine".
 ## Personalities
 
 Preferences has a Personality picker. The default is the spoken English above;
-the other six are ported from
-[LittleFuzzyClock](https://github.com/gkoch02/LittleFuzzyClock). All shown at
-8:40 pm:
+six of the others are ported from
+[LittleFuzzyClock](https://github.com/gkoch02/LittleFuzzyClock), and Vague is
+FuzzyBar's own. All shown at 8:40 pm:
 
 | Personality | 8:40 pm reads | Notes |
 | --- | --- | --- |
@@ -81,15 +81,17 @@ the other six are ported from
 | Mission Control | `T-20 MINUTES, 2100 HOURS` | Mission-control patter; 24-hour numeric time. |
 | Eldritch | `twenty 'fore, the ninth hour` | Cosmic dread; ordinal hours; climaxes with "the stars are right". |
 | Latin | `viginti ante hora IX p.m.` | Roman-numeral hours; real Latin prepositions. |
+| Vague | `evening` | Just the part of the day, from *early* round to *way too late*. |
 
 <p align="center">
   <img src="Assets/screenshots/strips/personalities.png" width="432" alt="Seven menubar strips stacked, one per personality, every one at 8:44 am: quarter to nine; quarter to nine am; a quarter ’fore nine of the clock; viertel vor neun; T-15 MINUTES, 0900 HOURS; quarter ’fore, the ninth hour; quadrans ante hora IX a.m.">
 </p>
 
-All seven are in that stack, shot in one sitting with the rest of the menubar
+The first seven are in that stack, shot in one sitting with the rest of the menubar
 hidden, so the difference between any two rows is the personality and nothing
 else. The table above is 8:40 pm because that is what Preferences previews;
-the strips are 8:44 am because that is when they were taken.
+the strips are 8:44 am because that is when they were taken. Vague came
+after the shoot; at 8:44 am it would have said `morning`.
 
 There were nine until the store submission, and four of them carried
 franchise names. HAL 9000 and Cthulhu had borrowed only the label, so they
@@ -99,6 +101,10 @@ Belta particles, which is the language itself rather than a nod to it, and
 renaming them would have kept the exposure while hiding the tell. Both are
 withdrawn. A preference file naming one of the renamed two migrates on first
 launch; one naming a withdrawn personality falls back to Spoken.
+
+Vague ignores the minutes and names the part of the day: *way too late*
+until 5, then *early*, *morning* from 7, *around noon* from 11:30, *after
+lunch* from 1, *afternoon* from 3, *evening* from 6, and *late* from 9.
 
 The six ported personalities share LittleFuzzyClock's twelve-slot table, so
 minutes 57 to 59 read "almost [next hour]" rather than flipping to the hour
@@ -121,7 +127,7 @@ approval states, and build-script failure handling.
 | --- | --- |
 | `Sources/FuzzyBar/FuzzyBarApp.swift` | App entry point and the menubar popover |
 | `Sources/FuzzyBar/FuzzyTime.swift` | Time-to-words conversion |
-| `Sources/FuzzyBar/Personality.swift` | The seven phrasing personalities |
+| `Sources/FuzzyBar/Personality.swift` | The eight phrasing personalities |
 | `Sources/FuzzyBar/Clock.swift` | Phrase-boundary ticker (minute updates while the popover is open) |
 | `Sources/FuzzyBar/CalendarView.swift` | Month grid |
 | `Sources/FuzzyBar/SettingsView.swift` | Preferences window |

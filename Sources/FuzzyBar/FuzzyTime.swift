@@ -11,12 +11,19 @@ enum FuzzyTime {
     ]
 
     static func phrase(hour: Int, minute: Int, personality: Personality = .default) -> String {
+        if personality == .vague { return vaguePhrase(hour: hour, minute: minute) }
         guard let slots = personality.slotPhrases else { return spokenPhrase(hour: hour, minute: minute) }
         // Cap at 11 so minutes 57-59 read "almost [next hour]" rather than
         // wrapping back to "just after [current hour]".
         let slot = min(Int((Double(minute) / 5.0).rounded()), 11)
         let displayHour = slot < personality.hourAdvanceSlot ? hour : (hour + 1) % 24
         return slots[slot] + personality.joiner + personality.hourText(displayHour: displayHour)
+    }
+
+    /// No rounding: the parts of the day start on the exact minute.
+    private static func vaguePhrase(hour: Int, minute: Int) -> String {
+        let minuteOfDay = hour * 60 + minute
+        return Personality.vagueParts.last { $0.start <= minuteOfDay }!.phrase
     }
 
     private static func spokenPhrase(hour: Int, minute: Int) -> String {
