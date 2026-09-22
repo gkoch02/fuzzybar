@@ -124,6 +124,14 @@ extension SettingsView {
 enum SettingsWindow {
     static weak var current: NSWindow?
 
+    /// AppKit gives the first editable control keyboard focus when the window
+    /// opens, which lit up the special-times hour as if it were selected.
+    /// Start with nothing focused; Tab still moves into the controls. Async,
+    /// because SwiftUI assigns that focus after the window is ordered in.
+    static func clearFocus(_ window: NSWindow) {
+        DispatchQueue.main.async { window.makeFirstResponder(nil) }
+    }
+
     struct Reader: NSViewRepresentable {
         func makeNSView(context: Context) -> NSView { View() }
         func updateNSView(_ nsView: NSView, context: Context) {}
@@ -134,6 +142,7 @@ enum SettingsWindow {
                 guard let window, window !== SettingsWindow.current else { return }
                 SettingsWindow.current = window
                 window.center()
+                SettingsWindow.clearFocus(window)
             }
         }
     }

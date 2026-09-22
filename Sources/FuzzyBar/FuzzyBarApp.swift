@@ -22,6 +22,7 @@ struct PopoverView: View {
     let now: Date
     @ObservedObject var sun: SunSettings
     let openSettings: () -> Void
+    @State private var popover = PopoverWindow()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -44,16 +45,22 @@ struct PopoverView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 menuRow("Preferences…") {
-                    // Re-center a window that was closed; leave an open one where it is.
-                    if let window = SettingsWindow.current, !window.isVisible { window.center() }
+                    // Re-center a window that was closed and start it unfocused;
+                    // leave an open one where it is, focus and all.
+                    let reopening = SettingsWindow.current.flatMap { $0.isVisible ? nil : $0 }
+                    reopening?.center()
+                    // A menu closes when you pick an item; the popover should too.
+                    popover.window?.close()
                     NSApp.activate(ignoringOtherApps: true)
                     openSettings()
+                    if let reopening { SettingsWindow.clearFocus(reopening) }
                 }
                 menuRow("Quit") { NSApp.terminate(nil) }
             }
             .padding(8)
         }
         .frame(width: 270)
+        .background(PopoverWindow.Reader(popover: popover))
     }
 
     private func menuRow(_ title: String, action: @escaping () -> Void) -> some View {
@@ -76,5 +83,31 @@ private struct MenuRowButton: View {
         }
         .buttonStyle(.plain)
         .onHover { hover = $0 }
+    }
+}
+
+/// MenuBarExtra has no API to close its window, and clicking a row inside it
+/// doesn't close it the way choosing a menu item would. This holds the
+/// window so a row can close it itself.
+final class PopoverWindow {
+    weak var window: NSWindow?
+
+    struct Reader: NSViewRepresentable {
+        let popover: PopoverWindow
+        func makeNSView(context: Context) -> NSView { View(popover: popover) }
+        func updateNSView(_ nsView: NSView, context: Context) {}
+
+        private final class View: NSView {
+            let popover: PopoverWindow
+            init(popover: PopoverWindow) {
+                self.popover = popover
+                super.init(frame: .zero)
+            }
+            required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
+            override func viewDidMoveToWindow() {
+                super.viewDidMoveToWindow()
+                popover.window = window
+            }
+        }
     }
 }
