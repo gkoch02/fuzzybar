@@ -14,7 +14,7 @@ $0.99, a signed universal build the store installs and keeps updated, or build i
 yourself for free from this repository (below). It's the same app either way.
 
 FuzzyBar exists because the fuzzy clock I'd used for years stopped getting
-updates and still ran under Rosetta. This one is a few hundred lines of Swift,
+updates and still ran under Rosetta. This one is under 1,500 lines of Swift,
 builds natively for Apple Silicon, and has no dependencies.
 
 ## Features
