@@ -25,7 +25,7 @@ builds natively for Apple Silicon, and has no dependencies.
 - Special times: your own text for a minute of your choosing, daily or yearly
 - Start at login, via the system Login Items list
 - Today's sunrise and sunset in the popover, without asking for your location
-- Your own personalities, written as small JSON files and imported
+- Your own personalities, written as plain text files and imported
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
 
 ## Requirements
@@ -153,9 +153,10 @@ approval states, and build-script failure handling.
 
 ## Your own personalities
 
-Preferences can import a personality you wrote yourself: a `.fuzzybar` file
-with the twelve five-minute phrases, the hour names, and how to join them.
-**Save as Template…** writes the current one out as a starting point, and
+Preferences can import a personality you wrote yourself: a plain text
+`.fuzzybar` file with a line for each five minutes and each hour, like
+`:40  twenty 'fore` and `9  nine`. **Save as Template…** writes the current
+one out and opens it in TextEdit as a starting point, and
 [`docs/PERSONALITY_FORMAT.md`](docs/PERSONALITY_FORMAT.md) has the details.
 [`Examples/Pirate.fuzzybar`](Examples/Pirate.fuzzybar) is a complete example.
 

@@ -1,34 +1,41 @@
-{
-  "version": 1,
-  "name": "Pirate",
-  "format": "{phrase} {hour}, arr",
-  "slots": [
-    "smack on",
-    "a wee bit past",
-    "ten past",
-    "quarter past",
-    "twenty past",
-    "twenty-five past",
-    "half past",
-    "twenty-five 'fore",
-    "twenty 'fore",
-    "quarter 'fore",
-    "ten 'fore",
-    "nigh on"
-  ],
-  "hours": [
-    "twelve",
-    "one",
-    "two",
-    "three",
-    "four",
-    "five",
-    "six",
-    "seven",
-    "eight",
-    "nine",
-    "ten",
-    "eleven"
-  ],
-  "nextHourFrom": 7
-}
+# A FuzzyBar personality. Change the words after each label, keep the
+# labels, then import this file from FuzzyBar's Preferences. Lines
+# starting with # are notes, and FuzzyBar ignores them.
+
+name: Pirate
+
+# How the two halves go together in the menubar.
+format: {phrase} {hour}, arr
+
+# The minute from which the hour named is the next one: at :35,
+# 8:35 is "twenty-five to nine".
+next hour from: :35
+
+# What the minutes say. Each line covers the five minutes around it,
+# and :55 carries on to :59.
+:00  smack on
+:05  a wee bit past
+:10  ten past
+:15  quarter past
+:20  twenty past
+:25  twenty-five past
+:30  half past
+:35  twenty-five 'fore
+:40  twenty 'fore
+:45  quarter 'fore
+:50  ten 'fore
+:55  nigh on
+
+# The hours. For different words in the morning and evening, use 0 to 23 instead.
+12  twelve
+1   one
+2   two
+3   three
+4   four
+5   five
+6   six
+7   seven
+8   eight
+9   nine
+10  ten
+11  eleven

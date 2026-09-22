@@ -1,79 +1,90 @@
 # FuzzyBar personality files
 
 A `.fuzzybar` file is a personality you write yourself: every word the
-menubar shows, in a small JSON file. Import it from Preferences
-(**Import…**, or drop the file on the Preferences window) and it appears in
-the Personality picker below the built-in ones.
+menubar shows, in a plain text file. Double-clicking one opens it in
+TextEdit.
 
-The quickest start is **Save as Template…**, which writes the personality
-you're using now to a file you can edit. Spoken and Vague don't use the
-table below, so choosing either one saves Classic instead.
+## Making one
+
+1. In FuzzyBar's Preferences, choose **Save as Template…**. It saves the
+   personality you're using now and opens the file in your text editor.
+   Spoken and Vague work differently, so choosing either one saves Classic
+   instead.
+2. Change the words after each label, keep the labels, and save.
+3. Choose **Import…**, or drop the file anywhere on the Preferences window.
+   It appears in the Personality picker below the built-in ones.
+
+To change it later, edit the same file and import it again: a file whose
+name line matches one you already have replaces it.
 [`Examples/Pirate.fuzzybar`](../Examples/Pirate.fuzzybar) is a complete one.
 
-## The file
+## What's in the file
 
-```json
-{
-  "version": 1,
-  "name": "Pirate",
-  "format": "{phrase} {hour}, arr",
-  "slots": ["smack on", "a wee bit past", "ten past", "quarter past",
-            "twenty past", "twenty-five past", "half past", "twenty-five 'fore",
-            "twenty 'fore", "quarter 'fore", "ten 'fore", "nigh on"],
-  "hours": ["twelve", "one", "two", "three", "four", "five",
-            "six", "seven", "eight", "nine", "ten", "eleven"],
-  "nextHourFrom": 7
-}
+```
+name: Pirate
+format: {phrase} {hour}, arr
+next hour from: :35
+
+:00  smack on
+:05  a wee bit past
+:10  ten past
+…
+:55  nigh on
+
+12  twelve
+1   one
+…
+11  eleven
 ```
 
-| Key | Required | What it is |
+Blank lines, and lines starting with `#`, are ignored, so templates carry
+their instructions as `#` notes. The order of the lines doesn't matter.
+Everything after a label is the words, exactly as written: apostrophes,
+commas and curly quotes need no escaping.
+
+| Line | Required | What it is |
 | --- | --- | --- |
-| `name` | yes | The name in the picker. |
-| `slots` | yes | Exactly 12 phrases, one per five minutes. |
-| `hours` | yes | 12 hour names starting at twelve, or 24 starting at midnight. |
-| `format` | no | How the two halves join. Needs `{phrase}` and `{hour}`. Default `"{phrase} {hour}"`. |
-| `nextHourFrom` | no | The slot where the hour named becomes the next one, 1 to 11. Default 7. |
-| `version` | no | The format version, currently 1. |
+| `name:` | yes | The name in the picker. |
+| `:00` to `:55` | yes, all twelve | What the minutes say. |
+| `12`, `1` to `11` | yes, all twelve | The hour names. Or `0` to `23`: see below. |
+| `format:` | no | How the two go together. Needs `{phrase}` and `{hour}`. Default `{phrase} {hour}`. |
+| `next hour from:` | no | The minute from which the hour named is the next one, `:05` to `:55`. Default `:35`. |
 
 ### How a time is read
 
-The minutes are rounded to the nearest five and pick a slot:
+Each minute line covers the five minutes around it: `:05` is 3 to 7 past,
+`:10` is 8 to 12 past, and so on. `:00` covers 0 to 2 past, and `:55` runs
+on to :59, so it's the "almost" line: 8:58 is still "nigh on nine", never
+"smack on nine" too early.
 
-| Slot | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Minutes | 0–2 | 3–7 | 8–12 | 13–17 | 18–22 | 23–27 | 28–32 | 33–37 | 38–42 | 43–47 | 48–52 | 53–59 |
+From `next hour from` on, the hour named is the next one: with `:35`, 8:35
+is "twenty-five 'fore nine". German says "fünf vor halb neun" at 8:25, so
+it uses `:25`.
 
-Slot 11 runs all the way to :59, so it's the "almost" slot: 8:58 is still
-"nigh on nine", never "smack on nine" too early.
-
-From slot `nextHourFrom` on, the hour is the next one: with the default 7,
-8:35 is "twenty-five 'fore nine". German counts "fünf vor halb neun" at
-8:25, so its value is 5.
-
-Twelve `hours` are used for both halves of the day. Give 24 when they
-differ, like "nine am" and "nine pm", or 24-hour styles like "2100 HOURS".
+Twelve hour lines are used for the morning and the evening. If they should
+differ, like "nine am" and "nine pm", or 24-hour styles like "2100 HOURS",
+write 24 lines from `0` (midnight) to `23` instead.
 
 `format` puts the two together, so a language that says the hour first can
-use `"{hour} {phrase}"`, and anything else in it, like `, arr`, is kept as
-written.
+use `{hour} {phrase}`. Anything else in it, like `, arr`, is kept as written.
 
 ## Things to know
 
+- **Plain text only.** If TextEdit shows a ruler and fonts, choose
+  Format > Make Plain Text before saving. FuzzyBar says so if it gets rich
+  text.
+- **Mistakes are reported by line,** for example *Line 14: :07 isn't one of
+  the minutes* or *The file needs a line for :40.*
 - **Length.** The menubar has room for about 30 characters before the
-  notch on some MacBooks hides the rest. FuzzyBar imports longer ones but
+  notch on some MacBooks hides the rest. FuzzyBar imports longer ones, but
   says which reading is longest.
-- **One line.** The menubar shows a single line, so a line break anywhere
-  in the name, `format`, a slot or an hour is refused, and so is an entry
-  that's only spaces or line breaks.
-- **Updating.** Importing a file whose name matches one you already have
-  replaces it, so edit, import again, and look at the menubar.
 - **Special times** still win: at a special time, and at the first minute
   of the year, the menubar shows that instead.
 - **Removing** one goes back to the built-in personality you had before.
 - **Where it's kept.** FuzzyBar copies the contents into its preferences
   when you import, so moving or deleting the file afterwards changes
-  nothing. It reads only the files you pick or drop, and writes only where
-  you save a template.
+  nothing. It reads only files you pick or drop, and writes only where you
+  save a template.
 
 ## Sharing
 

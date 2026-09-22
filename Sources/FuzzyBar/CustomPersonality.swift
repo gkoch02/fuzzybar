@@ -19,9 +19,7 @@ struct CustomPersonality: Codable, Equatable, Identifiable {
     var nextHourFrom: Int
 
     static let fileExtension = "fuzzybar"
-    static let contentType = UTType(exportedAs: "dev.plumpbug.fuzzybar.personality", conformingTo: .json)
-    /// The file format this build reads and writes.
-    static let formatVersion = 1
+    static let contentType = UTType(exportedAs: "dev.plumpbug.fuzzybar.personality", conformingTo: .plainText)
 
     func phrase(hour: Int, minute: Int) -> String {
         let slot = min(Int((Double(minute) / 5.0).rounded()), 11)
@@ -42,108 +40,184 @@ struct CustomPersonality: Codable, Equatable, Identifiable {
 
 // MARK: - Files
 
+/// A .fuzzybar file is plain text meant for TextEdit: every line says which
+/// time it's for, so there's no quoting to get wrong and nothing to look up.
+///
+///     name: Pirate
+///     format: {phrase} {hour}, arr
+///     next hour from: :35
+///     :00  smack on
+///     ...
+///     :55  nigh on
+///     12  twelve
+///     1   one
+///     ...
+///
+/// Blank lines and lines starting with # are ignored.
 extension CustomPersonality {
-    /// What's in a .fuzzybar file. Separate from the stored model so the file
-    /// has no id, and optional fields can be left out.
-    private struct File: Codable {
-        var version: Int?
-        var name: String?
-        var format: String?
-        var slots: [String]?
-        var hours: [String]?
-        var nextHourFrom: Int?
-    }
-
     enum ImportError: LocalizedError, Equatable {
-        case notJSON
-        case newerVersion(Int)
-        case missing(String)
-        case wrongCount(String, expected: String, found: Int)
-        case emptyEntry(String, index: Int)
-        case lineBreak(String, index: Int?)
+        case notText
+        case richText
+        case unreadableLine(Int)
+        case unknownSetting(Int, String)
+        case noWords(Int, String)
+        case duplicate(Int, String)
+        case badMinute(Int, String)
+        case badHour(Int, String)
+        case badNextHour(Int, String)
+        case missingName
+        case missingMinute(String)
+        case missingHour(String, twentyFour: Bool)
         case formatNeedsPlaceholders
-        case nextHourOutOfRange(Int)
 
         var errorDescription: String? {
             switch self {
-            case .notJSON:
-                return "That file isn't a FuzzyBar personality: it needs to be JSON, like a saved template."
-            case let .newerVersion(v):
-                return "That file is format version \(v), made for a newer FuzzyBar."
-            case let .missing(key):
-                return "The file needs \"\(key)\"."
-            case let .wrongCount(key, expected, found):
-                return "\"\(key)\" needs \(expected), this file has \(found)."
-            case let .emptyEntry(key, index):
-                return "Entry \(index + 1) of \"\(key)\" is empty."
-            case let .lineBreak(key, index):
-                let what = index.map { "Entry \($0 + 1) of \"\(key)\"" } ?? "\"\(key)\""
-                return "\(what) has a line break, and the menubar has only one line."
+            case .notText:
+                return "That file isn't plain text. Save as Template makes one to start from."
+            case .richText:
+                return "That file is rich text. In TextEdit, choose Format > Make Plain Text, save, and import it again."
+            case let .unreadableLine(n):
+                return "Line \(n) isn't a setting, a minute line like \":05 five past\", or an hour line like \"9 nine\"."
+            case let .unknownSetting(n, key):
+                return "Line \(n): FuzzyBar doesn't know the setting \"\(key)\". It knows name, format and next hour from."
+            case let .noWords(n, label):
+                return "Line \(n): \(label) has no words after it."
+            case let .duplicate(n, label):
+                return "Line \(n): \(label) is there twice."
+            case let .badMinute(n, label):
+                return "Line \(n): \(label) isn't one of the minutes. They go in fives, :00 to :55."
+            case let .badHour(n, label):
+                return "Line \(n): \(label) isn't an hour. Use 12 and 1 to 11, or 0 to 23."
+            case let .badNextHour(n, value):
+                return "Line \(n): next hour from needs a minute between :05 and :55, not \"\(value)\"."
+            case .missingName:
+                return "The file needs a name line, like \"name: Pirate\"."
+            case let .missingMinute(label):
+                return "The file needs a line for \(label)."
+            case let .missingHour(label, twentyFour):
+                return "The file needs a line for hour \(label)" + (twentyFour ? " (it uses 0 to 23)." : ".")
             case .formatNeedsPlaceholders:
-                return "\"format\" needs both {phrase} and {hour}."
-            case let .nextHourOutOfRange(n):
-                return "\"nextHourFrom\" must be between 1 and 11, not \(n)."
+                return "The format line needs both {phrase} and {hour}."
             }
         }
     }
 
-    /// Reads and checks a file. Everything wrong with it is reported by name,
-    /// since the person reading the message is editing JSON by hand.
+    private static let minuteLabels = (0..<12).map { String(format: ":%02d", $0 * 5) }
+    private static let twelveHourLabels = [12] + Array(1...11)
+
+    /// Reads and checks a file. Problems are reported by line and by label,
+    /// since the person reading the message is looking at the file in TextEdit.
     static func decode(_ data: Data) throws -> CustomPersonality {
-        let file: File
-        do { file = try JSONDecoder().decode(File.self, from: data) } catch { throw ImportError.notJSON }
-        if let v = file.version, v > formatVersion { throw ImportError.newerVersion(v) }
-        // Blank means blank to the eye: an escaped "\n" counts.
-        guard let name = file.name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
-            throw ImportError.missing("name")
+        guard var text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .utf16) else {
+            throw ImportError.notText
         }
-        if name.hasLineBreak { throw ImportError.lineBreak("name", index: nil) }
-        guard let slots = file.slots else { throw ImportError.missing("slots") }
-        guard slots.count == 12 else { throw ImportError.wrongCount("slots", expected: "12 phrases", found: slots.count) }
-        guard let hours = file.hours else { throw ImportError.missing("hours") }
-        guard hours.count == 12 || hours.count == 24 else {
-            throw ImportError.wrongCount("hours", expected: "12 or 24 names", found: hours.count)
-        }
-        for (key, list) in [("slots", slots), ("hours", hours)] {
-            if let i = list.firstIndex(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
-                throw ImportError.emptyEntry(key, index: i)
+        if text.hasPrefix("\u{FEFF}") { text.removeFirst() }
+        if text.hasPrefix("{\\rtf") { throw ImportError.richText }
+
+        var name: String?
+        var format = "{phrase} {hour}"
+        var nextHourFrom = 7
+        var slots: [Int: String] = [:]
+        var hours: [Int: String] = [:]
+
+        // Split on Character newlines so "\r\n" counts as one line break.
+        for (index, raw) in text.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).enumerated() {
+            let n = index + 1
+            let line = raw.trimmingCharacters(in: .whitespaces)
+            if line.isEmpty || line.hasPrefix("#") { continue }
+
+            if line.hasPrefix(":") {
+                let (label, words) = split(line)
+                guard let i = minuteLabels.firstIndex(of: label) else { throw ImportError.badMinute(n, label) }
+                guard !words.isEmpty else { throw ImportError.noWords(n, label) }
+                guard slots[i] == nil else { throw ImportError.duplicate(n, label) }
+                slots[i] = words
+            } else if line.first!.isNumber {
+                let (label, words) = split(line)
+                guard let hour = Int(label), (0...23).contains(hour), label.count <= 2 else {
+                    throw ImportError.badHour(n, label)
+                }
+                guard !words.isEmpty else { throw ImportError.noWords(n, label) }
+                guard hours[hour] == nil else { throw ImportError.duplicate(n, label) }
+                hours[hour] = words
+            } else if let colon = line.firstIndex(of: ":") {
+                let key = line[..<colon].trimmingCharacters(in: .whitespaces)
+                let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+                switch key.lowercased() {
+                case "name":
+                    guard !value.isEmpty else { throw ImportError.noWords(n, "name") }
+                    name = value
+                case "format":
+                    format = value
+                case "next hour from":
+                    let digits = value.hasPrefix(":") ? String(value.dropFirst()) : value
+                    guard let minute = Int(digits), minute % 5 == 0, (5...55).contains(minute) else {
+                        throw ImportError.badNextHour(n, value)
+                    }
+                    nextHourFrom = minute / 5
+                default:
+                    throw ImportError.unknownSetting(n, key)
+                }
+            } else {
+                throw ImportError.unreadableLine(n)
             }
-            if let i = list.firstIndex(where: \.hasLineBreak) { throw ImportError.lineBreak(key, index: i) }
         }
-        let format = file.format ?? "{phrase} {hour}"
+
+        guard let name else { throw ImportError.missingName }
         guard format.contains("{phrase}"), format.contains("{hour}") else { throw ImportError.formatNeedsPlaceholders }
-        if format.hasLineBreak { throw ImportError.lineBreak("format", index: nil) }
-        let nextHourFrom = file.nextHourFrom ?? 7
-        guard (1...11).contains(nextHourFrom) else { throw ImportError.nextHourOutOfRange(nextHourFrom) }
-        return CustomPersonality(name: name, format: format, slots: slots, hours: hours, nextHourFrom: nextHourFrom)
+        if let missing = (0..<12).first(where: { slots[$0] == nil }) {
+            throw ImportError.missingMinute(minuteLabels[missing])
+        }
+        // Any of 0 or 13 to 23 means a 24-hour table; otherwise 12 and 1 to 11.
+        let twentyFour = hours.keys.contains { $0 == 0 || $0 > 12 }
+        let needed = twentyFour ? Array(0...23) : twelveHourLabels
+        if let missing = needed.first(where: { hours[$0] == nil }) {
+            throw ImportError.missingHour(String(missing), twentyFour: twentyFour)
+        }
+        // Stored in clock order: index 0 is twelve (or midnight).
+        let ordered = twentyFour ? (0...23).map { hours[$0]! } : (0..<12).map { hours[$0 == 0 ? 12 : $0]! }
+        return CustomPersonality(name: name, format: format, slots: (0..<12).map { slots[$0]! },
+                                 hours: ordered, nextHourFrom: nextHourFrom)
     }
 
-    /// Pretty-printed with the keys in reading order, so a saved template is
-    /// something a person can edit.
+    /// ":05  five past" -> (":05", "five past"); the label ends at the first space or tab.
+    private static func split(_ line: String) -> (String, String) {
+        guard let gap = line.firstIndex(where: \.isWhitespace) else { return (line, "") }
+        return (String(line[..<gap]), line[gap...].trimmingCharacters(in: .whitespaces))
+    }
+
+    /// A file a person can edit in TextEdit, with the instructions in it.
     func encoded() -> Data {
-        func quoted(_ s: String) -> String {
-            String(data: try! JSONEncoder().encode(s), encoding: .utf8)!
-        }
-        func list(_ items: [String]) -> String {
-            "[\n" + items.map { "    " + quoted($0) }.joined(separator: ",\n") + "\n  ]"
-        }
-        let body = """
-        {
-          "version": \(Self.formatVersion),
-          "name": \(quoted(name)),
-          "format": \(quoted(format)),
-          "slots": \(list(slots)),
-          "hours": \(list(hours)),
-          "nextHourFrom": \(nextHourFrom)
-        }
-
-        """
-        return Data(body.utf8)
+        let twentyFour = hours.count == 24
+        let hourLabels = twentyFour ? (0...23).map(String.init) : Self.twelveHourLabels.map(String.init)
+        let hourWords = twentyFour ? hours : Self.twelveHourLabels.map { hours[$0 % 12] }
+        var lines = [
+            "# A FuzzyBar personality. Change the words after each label, keep the",
+            "# labels, then import this file from FuzzyBar's Preferences. Lines",
+            "# starting with # are notes, and FuzzyBar ignores them.",
+            "",
+            "name: \(name)",
+            "",
+            "# How the two halves go together in the menubar.",
+            "format: \(format)",
+            "",
+            "# The minute from which the hour named is the next one: at :35,",
+            "# 8:35 is \"twenty-five to nine\".",
+            "next hour from: \(Self.minuteLabels[nextHourFrom])",
+            "",
+            "# What the minutes say. Each line covers the five minutes around it,",
+            "# and :55 carries on to :59.",
+        ]
+        lines += zip(Self.minuteLabels, slots).map { "\($0)  \($1)" }
+        lines += [
+            "",
+            twentyFour
+                ? "# The hours, 0 (midnight) to 23."
+                : "# The hours. For different words in the morning and evening, use 0 to 23 instead.",
+        ]
+        lines += zip(hourLabels, hourWords).map { $0.padding(toLength: 4, withPad: " ", startingAt: 0) + $1 }
+        return Data((lines.joined(separator: "\n") + "\n").utf8)
     }
-}
-
-private extension String {
-    var hasLineBreak: Bool { unicodeScalars.contains { CharacterSet.newlines.contains($0) } }
 }
 
 // MARK: - Templates

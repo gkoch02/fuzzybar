@@ -79,7 +79,7 @@ struct PersonalitySection: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .fileImporter(isPresented: $importing, allowedContentTypes: [CustomPersonality.contentType, .json]) { result in
+        .fileImporter(isPresented: $importing, allowedContentTypes: [CustomPersonality.contentType, .plainText]) { result in
             switch result {
             case let .success(url): message = clock.importPersonality(from: url)
             case let .failure(error): message = PersonalityMessage(text: error.localizedDescription, isError: true)
@@ -87,10 +87,13 @@ struct PersonalitySection: View {
         }
         .fileExporter(isPresented: $exporting, document: PersonalityFile(data: template.encoded()),
                       contentType: CustomPersonality.contentType, defaultFilename: template.name) { result in
-            if case let .failure(error) = result {
+            switch result {
+            case let .success(url):
+                // Straight into the text editor: save, edit, import.
+                NSWorkspace.shared.open(url)
+                message = PersonalityMessage(text: "Saved and opened in your text editor. Change the words, save, then import it.")
+            case let .failure(error):
                 message = PersonalityMessage(text: error.localizedDescription, isError: true)
-            } else {
-                message = PersonalityMessage(text: "Saved. Edit it in any text editor, then import it.")
             }
         }
     }

@@ -2,19 +2,24 @@ import XCTest
 @testable import FuzzyBar
 
 final class CustomPersonalityTests: XCTestCase {
-    private func decode(_ json: String) throws -> CustomPersonality {
-        try CustomPersonality.decode(Data(json.utf8))
+    private func decode(_ text: String) throws -> CustomPersonality {
+        try CustomPersonality.decode(Data(text.utf8))
     }
 
-    private func assertFails(_ json: String, _ expected: CustomPersonality.ImportError,
+    private func assertFails(_ text: String, _ expected: CustomPersonality.ImportError,
                              file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertThrowsError(try decode(json), file: file, line: line) {
+        XCTAssertThrowsError(try decode(text), file: file, line: line) {
             XCTAssertEqual($0 as? CustomPersonality.ImportError, expected, file: file, line: line)
         }
     }
 
-    private let twelve = (1...12).map { "\"s\($0)\"" }.joined(separator: ",")
-    private let hours = (0..<12).map { "\"h\($0)\"" }.joined(separator: ",")
+    private let minutes = (0..<12).map { String(format: ":%02d  s%d", $0 * 5, $0 + 1) }.joined(separator: "\n")
+    private let hours12 = ([12] + Array(1...11)).map { "\($0)  h\($0 % 12)" }.joined(separator: "\n")
+
+    /// A minimal valid file with `extra` lines after the name.
+    private func file(_ extra: String = "", minutes: String? = nil, hours: String? = nil) -> String {
+        "name: X\n\(extra)\n\(minutes ?? self.minutes)\n\(hours ?? hours12)\n"
+    }
 
     private var pirateURL: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../Examples/Pirate.fuzzybar")
@@ -27,6 +32,14 @@ final class CustomPersonalityTests: XCTestCase {
         XCTAssertEqual(pirate.phrase(hour: 23, minute: 58), "nigh on twelve, arr")
         XCTAssertEqual(pirate.phrase(hour: 0, minute: 1), "smack on twelve, arr")
         XCTAssertLessThanOrEqual(pirate.longestReading.count, SpecialTime.maxLength, pirate.longestReading)
+    }
+
+    /// The example is exactly what Save as Template writes, so the two
+    /// can't drift apart.
+    func testTheExampleIsWhatSaveAsTemplateWrites() throws {
+        let data = try Data(contentsOf: pirateURL)
+        XCTAssertEqual(String(decoding: try CustomPersonality.decode(data).encoded(), as: UTF8.self),
+                       String(decoding: data, as: UTF8.self))
     }
 
     /// Saving any slot-table personality as a template and reading it back
@@ -59,59 +72,68 @@ final class CustomPersonalityTests: XCTestCase {
     func testTheFileTypeIsDeclared() throws {
         try XCTSkipUnless(Bundle.main.bundleIdentifier == "dev.plumpbug.fuzzybar", "needs the app's Info.plist")
         XCTAssertEqual(CustomPersonality.contentType.preferredFilenameExtension, "fuzzybar")
-        XCTAssertTrue(CustomPersonality.contentType.conforms(to: .json))
+        XCTAssertTrue(CustomPersonality.contentType.conforms(to: .plainText))
     }
 
-    func testDefaultsForOptionalFields() throws {
-        let p = try decode(#"{"name": "Min", "slots": [\#(twelve)], "hours": [\#(hours)]}"#)
+    func testDefaultsAndOrderDoNotMatter() throws {
+        // Hours first, minutes shuffled, no format or next hour from.
+        let shuffled = file(minutes: minutes.split(separator: "\n").reversed().joined(separator: "\n"))
+        let p = try decode(shuffled)
         XCTAssertEqual(p.format, "{phrase} {hour}")
         XCTAssertEqual(p.nextHourFrom, 7)
         XCTAssertEqual(p.phrase(hour: 9, minute: 35), "s8 h10")
         XCTAssertEqual(p.phrase(hour: 9, minute: 30), "s7 h9")
+        XCTAssertEqual(p.phrase(hour: 0, minute: 0), "s1 h0")
     }
 
     func testTwentyFourHoursAndHourFirstFormats() throws {
-        let h24 = (0..<24).map { "\"H\($0)\"" }.joined(separator: ",")
-        let p = try decode(#"{"name": "X", "format": "{hour}: {phrase}", "slots": [\#(twelve)], "hours": [\#(h24)], "nextHourFrom": 5}"#)
+        let h24 = (0..<24).map { "\($0)  H\($0)" }.joined(separator: "\n")
+        let p = try decode(file("format: {hour}: {phrase}\nnext hour from: :25", hours: h24))
+        XCTAssertEqual(p.hours.count, 24)
         XCTAssertEqual(p.phrase(hour: 21, minute: 20), "H21: s5")
         XCTAssertEqual(p.phrase(hour: 21, minute: 25), "H22: s6")
         XCTAssertEqual(p.phrase(hour: 23, minute: 59), "H0: s12")
     }
 
-    func testAPhraseContainingAPlaceholderIsLeftAlone() throws {
-        let slots = (["{hour} o'clock"] + (2...12).map { "s\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
-        let p = try decode(#"{"name": "X", "slots": [\#(slots)], "hours": [\#(hours)]}"#)
-        XCTAssertEqual(p.phrase(hour: 3, minute: 0), "{hour} o'clock h3")
+    func testTheWordsAreTakenAsWritten() throws {
+        let odd = minutes.replacingOccurrences(of: ":00  s1", with: ":00\t{hour} o'clock, “sort of”   # not a note")
+        let p = try decode("# a note\n\n  name:  Pi: rate  \n" + odd + "\n" + hours12)
+        XCTAssertEqual(p.name, "Pi: rate")
+        XCTAssertEqual(p.phrase(hour: 3, minute: 0), "{hour} o'clock, “sort of”   # not a note h3")
     }
 
-    func testErrorsNameTheProblem() {
-        assertFails("not json", .notJSON)
-        assertFails(#"{"version": 2, "name": "X"}"#, .newerVersion(2))
-        assertFails(#"{"slots": [\#(twelve)], "hours": [\#(hours)]}"#, .missing("name"))
-        assertFails(#"{"name": "  ", "slots": [\#(twelve)], "hours": [\#(hours)]}"#, .missing("name"))
-        assertFails(#"{"name": "X", "hours": [\#(hours)]}"#, .missing("slots"))
-        assertFails(#"{"name": "X", "slots": ["a"], "hours": [\#(hours)]}"#,
-                    .wrongCount("slots", expected: "12 phrases", found: 1))
-        assertFails(#"{"name": "X", "slots": [\#(twelve)]}"#, .missing("hours"))
-        assertFails(#"{"name": "X", "slots": [\#(twelve)], "hours": ["a", "b"]}"#,
-                    .wrongCount("hours", expected: "12 or 24 names", found: 2))
-        let blank = (["s1", " "] + (3...12).map { "s\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
-        assertFails(#"{"name": "X", "slots": [\#(blank)], "hours": [\#(hours)]}"#, .emptyEntry("slots", index: 1))
-        assertFails(#"{"name": "X", "format": "{phrase}", "slots": [\#(twelve)], "hours": [\#(hours)]}"#,
-                    .formatNeedsPlaceholders)
-        assertFails(#"{"name": "X", "slots": [\#(twelve)], "hours": [\#(hours)], "nextHourFrom": 12}"#,
-                    .nextHourOutOfRange(12))
-        // Escaped newlines are blank to the eye, and the menubar has one line.
-        assertFails(#"{"name": "\n", "slots": [\#(twelve)], "hours": [\#(hours)]}"#, .missing("name"))
-        let newlineSlot = (["s1", "\\n"] + (3...12).map { "s\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
-        assertFails(#"{"name": "X", "slots": [\#(newlineSlot)], "hours": [\#(hours)]}"#, .emptyEntry("slots", index: 1))
-        let brokenHour = (["h0", "h1", "one\\ntwo"] + (3..<12).map { "h\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
-        assertFails(#"{"name": "X", "slots": [\#(twelve)], "hours": [\#(brokenHour)]}"#, .lineBreak("hours", index: 2))
-        assertFails(#"{"name": "X", "format": "{phrase}\n{hour}", "slots": [\#(twelve)], "hours": [\#(hours)]}"#,
-                    .lineBreak("format", index: nil))
-        assertFails(#"{"name": "Pi\rrate", "slots": [\#(twelve)], "hours": [\#(hours)]}"#, .lineBreak("name", index: nil))
-        XCTAssertEqual(CustomPersonality.ImportError.wrongCount("slots", expected: "12 phrases", found: 11).errorDescription,
-                       "\"slots\" needs 12 phrases, this file has 11.")
+    /// TextEdit and friends save in more than one way.
+    func testLineEndingsBOMAndUTF16() throws {
+        let text = file("next hour from: 35")
+        XCTAssertEqual(try decode(text.replacingOccurrences(of: "\n", with: "\r\n")).slots.count, 12)
+        XCTAssertEqual(try CustomPersonality.decode(Data(("\u{FEFF}" + text).utf8)).name, "X")
+        XCTAssertEqual(try CustomPersonality.decode(text.data(using: .utf16)!).name, "X")
+        // Line numbers count CRLF as one break.
+        assertFails("name: X\r\n\r\nnonsense\r\n", .unreadableLine(3))
+    }
+
+    func testErrorsNameTheLineAndLabel() {
+        assertFails("{\\rtf1\\ansi name: X}", .richText)
+        XCTAssertThrowsError(try CustomPersonality.decode(Data([0xFF, 0xFE, 0xFF, 0xD8, 0x00]))) {
+            XCTAssertEqual($0 as? CustomPersonality.ImportError, .notText)
+        }
+        assertFails("name: X\nwhat is this", .unreadableLine(2))
+        assertFails("name: X\nnmae: Y", .unknownSetting(2, "nmae"))
+        assertFails("name: \n", .noWords(1, "name"))
+        assertFails(file().replacingOccurrences(of: ":05  s2", with: ":05  "), .noWords(4, ":05"))
+        assertFails(file().replacingOccurrences(of: ":05  s2", with: ":07  s2"), .badMinute(4, ":07"))
+        assertFails(file().replacingOccurrences(of: ":05  s2", with: ":00  again"), .duplicate(4, ":00"))
+        assertFails(file().replacingOccurrences(of: "\n9  h9", with: "\n25  h9"), .badHour(24, "25"))
+        assertFails(file().replacingOccurrences(of: "\n9  h9", with: "\n9pm  h9"), .badHour(24, "9pm"))
+        assertFails(file("next hour from: :37"), .badNextHour(2, ":37"))
+        assertFails(file("next hour from: :00"), .badNextHour(2, ":00"))
+        assertFails(file().replacingOccurrences(of: "name: X\n", with: ""), .missingName)
+        assertFails(file().replacingOccurrences(of: ":40  s9\n", with: ""), .missingMinute(":40"))
+        assertFails(file().replacingOccurrences(of: "\n7  h7", with: ""), .missingHour("7", twentyFour: false))
+        assertFails(file().replacingOccurrences(of: "\n7  h7", with: "\n13  h1"), .missingHour("0", twentyFour: true))
+        assertFails(file("format: {phrase}"), .formatNeedsPlaceholders)
+        XCTAssertEqual(CustomPersonality.ImportError.missingMinute(":40").errorDescription,
+                       "The file needs a line for :40.")
     }
 
     @MainActor
