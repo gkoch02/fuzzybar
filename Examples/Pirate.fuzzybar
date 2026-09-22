@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "Pirate",
+  "format": "{phrase} {hour}, arr",
+  "slots": [
+    "smack on",
+    "a wee bit past",
+    "ten past",
+    "quarter past",
+    "twenty past",
+    "twenty-five past",
+    "half past",
+    "twenty-five 'fore",
+    "twenty 'fore",
+    "quarter 'fore",
+    "ten 'fore",
+    "nigh on"
+  ],
+  "hours": [
+    "twelve",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven"
+  ],
+  "nextHourFrom": 7
+}

@@ -16,6 +16,20 @@
     <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
+    <!-- Custom personality files (see docs/PERSONALITY_FORMAT.md): JSON with
+         their own extension, so the open and save panels can pick them out. -->
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key><string>dev.plumpbug.fuzzybar.personality</string>
+            <key>UTTypeDescription</key><string>FuzzyBar Personality</string>
+            <key>UTTypeConformsTo</key><array><string>public.json</string></array>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key><array><string>fuzzybar</string></array>
+            </dict>
+        </dict>
+    </array>
     <key>NSHumanReadableCopyright</key><string>© 2026 Gregory M Koch</string>
 </dict>
 </plist>
