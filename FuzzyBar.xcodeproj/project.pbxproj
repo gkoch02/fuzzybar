@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		37A0707D0A60FAD93E97E506 /* CalendarGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */; };
+		44108A0AA9B5496CD5C3021F /* SunView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAABB1BEB611FF49CD374907 /* SunView.swift */; };
+		4C45A9D129257D2E9951EB51 /* SunSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524E6448E6CD15ACE2AA31EC /* SunSettings.swift */; };
 		50D9DC7280F2FF3BE7591A31 /* PersonalityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1379B2D6AF7BDB43D67059 /* PersonalityTests.swift */; };
+		5863061CC74788DDF224249D /* Sun.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDABA1B83D3AAF56EC1A1D33 /* Sun.swift */; };
 		64816686DAFB23425652BFAB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518C89C64E34D69A91490977 /* SettingsView.swift */; };
 		682CD32C35DCE363532AA143 /* FuzzyTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */; };
 		766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */; };
 		769FBDF0F0E7FF2DC61D6AB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32569F1B104EB3ACD497659C /* Assets.xcassets */; };
+		76CD3C2C461EB4841FCD610D /* SunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FDE7F6E8B4098B83851D6B6 /* SunTests.swift */; };
 		7E0F3FD948223A4B9D22A3D9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */; };
 		95B16C71A7A9702595700B96 /* FuzzyTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */; };
 		A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */; };
@@ -20,6 +24,7 @@
 		BB649E8E1636670A4E253035 /* Personality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8391076FAEB2905D423F44 /* Personality.swift */; };
 		C093B5A776EBF3FA894FAA7C /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB764659BCAC1C6A9533FAE /* Clock.swift */; };
 		CDF317B3569BE9CB37B0C5C4 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */; };
+		D895FA276909EBEB7A84DC9C /* ZoneLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3A8529B8ABBFC2B9CE826D /* ZoneLocations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FDE7F6E8B4098B83851D6B6 /* SunTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunTests.swift; sourceTree = "<group>"; };
 		075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGrid.swift; sourceTree = "<group>"; };
 		32569F1B104EB3ACD497659C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -40,6 +46,8 @@
 		4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTimeTests.swift; sourceTree = "<group>"; };
 		4A8391076FAEB2905D423F44 /* Personality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personality.swift; sourceTree = "<group>"; };
 		518C89C64E34D69A91490977 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		524E6448E6CD15ACE2AA31EC /* SunSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunSettings.swift; sourceTree = "<group>"; };
+		5D3A8529B8ABBFC2B9CE826D /* ZoneLocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneLocations.swift; sourceTree = "<group>"; };
 		7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyBarApp.swift; sourceTree = "<group>"; };
 		7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRegressionTests.swift; sourceTree = "<group>"; };
@@ -47,7 +55,9 @@
 		E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FuzzyBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2D60058A591C7B6666A279 /* FuzzyBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FuzzyBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED1379B2D6AF7BDB43D67059 /* PersonalityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalityTests.swift; sourceTree = "<group>"; };
+		EDABA1B83D3AAF56EC1A1D33 /* Sun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sun.swift; sourceTree = "<group>"; };
 		EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettings.swift; sourceTree = "<group>"; };
+		FAABB1BEB611FF49CD374907 /* SunView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -70,6 +80,10 @@
 				EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */,
 				4A8391076FAEB2905D423F44 /* Personality.swift */,
 				518C89C64E34D69A91490977 /* SettingsView.swift */,
+				EDABA1B83D3AAF56EC1A1D33 /* Sun.swift */,
+				524E6448E6CD15ACE2AA31EC /* SunSettings.swift */,
+				FAABB1BEB611FF49CD374907 /* SunView.swift */,
+				5D3A8529B8ABBFC2B9CE826D /* ZoneLocations.swift */,
 			);
 			path = FuzzyBar;
 			sourceTree = "<group>";
@@ -80,6 +94,7 @@
 				4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */,
 				ED1379B2D6AF7BDB43D67059 /* PersonalityTests.swift */,
 				823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */,
+				0FDE7F6E8B4098B83851D6B6 /* SunTests.swift */,
 			);
 			path = FuzzyBarTests;
 			sourceTree = "<group>";
@@ -223,6 +238,10 @@
 				766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */,
 				BB649E8E1636670A4E253035 /* Personality.swift in Sources */,
 				64816686DAFB23425652BFAB /* SettingsView.swift in Sources */,
+				5863061CC74788DDF224249D /* Sun.swift in Sources */,
+				4C45A9D129257D2E9951EB51 /* SunSettings.swift in Sources */,
+				44108A0AA9B5496CD5C3021F /* SunView.swift in Sources */,
+				D895FA276909EBEB7A84DC9C /* ZoneLocations.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +252,7 @@
 				682CD32C35DCE363532AA143 /* FuzzyTimeTests.swift in Sources */,
 				50D9DC7280F2FF3BE7591A31 /* PersonalityTests.swift in Sources */,
 				A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */,
+				76CD3C2C461EB4841FCD610D /* SunTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

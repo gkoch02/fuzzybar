@@ -3,22 +3,24 @@ import SwiftUI
 @main
 struct FuzzyBarApp: App {
     @StateObject private var clock = Clock()
+    @StateObject private var sun = SunSettings()
     @Environment(\.openSettings) private var openSettings
 
     var body: some Scene {
         MenuBarExtra(clock.fuzzy) {
-            PopoverView(now: clock.now, openSettings: { openSettings() })
+            PopoverView(now: clock.now, sun: sun, openSettings: { openSettings() })
                 .onAppear { clock.setPopoverVisible(true) }
                 .onDisappear { clock.setPopoverVisible(false) }
         }
         .menuBarExtraStyle(.window)
 
-        Settings { SettingsView().environmentObject(clock) }
+        Settings { SettingsView().environmentObject(clock).environmentObject(sun) }
     }
 }
 
 struct PopoverView: View {
     let now: Date
+    @ObservedObject var sun: SunSettings
     let openSettings: () -> Void
 
     var body: some View {
@@ -28,6 +30,8 @@ struct PopoverView: View {
                     .font(.system(size: 22, weight: .medium))
                 Text(now, format: .dateTime.weekday(.wide).month(.wide).day().year())
                     .foregroundStyle(.secondary)
+                SunView(now: now, settings: sun)
+                    .padding(.top, 6)
             }
             .padding(.horizontal, 16).padding(.top, 14).padding(.bottom, 10)
 
