@@ -43,23 +43,20 @@ final class SunSettings: ObservableObject {
         usesCustomLocation ? customLocation : Self.zoneLocation(timeZone)
     }
 
-    /// Older spellings some systems still report; zone.tab has only the new.
-    private nonisolated static let renamedZones = [
-        "Asia/Calcutta": "Asia/Kolkata", "Asia/Saigon": "Asia/Ho_Chi_Minh",
-        "Asia/Katmandu": "Asia/Kathmandu", "Asia/Rangoon": "Asia/Yangon",
-        "Europe/Kiev": "Europe/Kyiv", "America/Buenos_Aires": "America/Argentina/Buenos_Aires",
-        "Atlantic/Faeroe": "Atlantic/Faroe", "Pacific/Truk": "Pacific/Chuuk",
-        "Pacific/Ponape": "Pacific/Pohnpei", "America/Godthab": "America/Nuuk",
-    ]
+    /// The zone.tab name for `timeZone`: Foundation keeps old and merged
+    /// names (US/Eastern, Asia/Calcutta) as they are, and tzdb's backward
+    /// file says which city each one means.
+    nonisolated static func canonicalZone(_ timeZone: TimeZone) -> String {
+        ZoneLocations.aliases[timeZone.identifier] ?? timeZone.identifier
+    }
 
     nonisolated static func zoneLocation(_ timeZone: TimeZone) -> (latitude: Double, longitude: Double)? {
-        let id = renamedZones[timeZone.identifier] ?? timeZone.identifier
-        return ZoneLocations.table[id]
+        ZoneLocations.table[canonicalZone(timeZone)]
     }
 
     /// "New York" for America/New_York, "Buenos Aires" for America/Argentina/Buenos_Aires.
     nonisolated static func cityName(_ timeZone: TimeZone) -> String {
-        let id = renamedZones[timeZone.identifier] ?? timeZone.identifier
+        let id = canonicalZone(timeZone)
         return (id.split(separator: "/").last.map(String.init) ?? id).replacingOccurrences(of: "_", with: " ")
     }
 }

@@ -76,9 +76,11 @@ switch that to typed-in coordinates, or hide the two lines. At midnight sun or
 polar night the popover says the sun doesn't set or doesn't rise today.
 
 The arithmetic is NOAA's simplified solar-position equations, ported from
-LittleFuzzyClock and good to a minute or two. The zone-to-city table is
-generated from the system's `zone.tab` by `Tools/make_zone_locations.py` and
-compiled in.
+LittleFuzzyClock and good to a minute or two. The zone-to-city table, and
+the old names that still point at a city (US/Eastern, Asia/Calcutta), are
+generated from an IANA tzdata release's `zone.tab` and `backward` by
+`Tools/make_zone_locations.py` and compiled in; the script's docstring has the
+download steps.
 
 ## Personalities
 
