@@ -17,20 +17,13 @@ struct SpecialTimesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Special times")
-            ForEach(clock.specialTimes) { special in
-                HStack(spacing: 6) {
-                    Text(Self.when(special)).monospacedDigit().foregroundStyle(.secondary)
-                    Text(special.text).lineLimit(1)
-                    Spacer(minLength: 0)
-                    Button {
-                        clock.specialTimes.removeAll { $0.id == special.id }
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }
-                    .buttonStyle(.borderless)
-                    .accessibilityLabel("Remove \(special.text)")
-                }
-                .font(.callout)
+            // Past a few rows the list scrolls, or a long one would push the
+            // window off the screen.
+            if clock.specialTimes.count > Self.visibleRows {
+                ScrollView { list }
+                    .frame(height: (CGFloat(Self.visibleRows) + 0.5) * Self.rowHeight)
+            } else {
+                list
             }
             HStack {
                 DatePicker("Time", selection: $time, displayedComponents: .hourAndMinute)
@@ -68,6 +61,30 @@ struct SpecialTimesSection: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private static let visibleRows = 5
+    private static let rowHeight: CGFloat = 22
+
+    private var list: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(clock.specialTimes) { special in
+                HStack(spacing: 6) {
+                    Text(Self.when(special)).monospacedDigit().foregroundStyle(.secondary)
+                    Text(special.text).lineLimit(1)
+                    Spacer(minLength: 0)
+                    Button {
+                        clock.specialTimes.removeAll { $0.id == special.id }
+                    } label: {
+                        Image(systemName: "minus.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityLabel("Remove \(special.text)")
+                }
+                .font(.callout)
+                .frame(height: Self.rowHeight)
+            }
+        }
     }
 
     private func add() {
