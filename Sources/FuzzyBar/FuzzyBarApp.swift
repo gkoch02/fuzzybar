@@ -40,6 +40,8 @@ struct PopoverView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 menuRow("Preferences…") {
+                    // Re-center a window that was closed; leave an open one where it is.
+                    if let window = SettingsWindow.current, !window.isVisible { window.center() }
                     NSApp.activate(ignoringOtherApps: true)
                     openSettings()
                 }
