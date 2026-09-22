@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24E09F039C92356B626E9062 /* SpecialTimesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F71DF1AA3F65646134B60B1 /* SpecialTimesSection.swift */; };
+		31B4C8CD3DF4DCD51B277FAC /* SpecialTimesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954874F52C1BE644E1FFDC5C /* SpecialTimesTests.swift */; };
 		37A0707D0A60FAD93E97E506 /* CalendarGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */; };
 		44108A0AA9B5496CD5C3021F /* SunView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAABB1BEB611FF49CD374907 /* SunView.swift */; };
 		4C45A9D129257D2E9951EB51 /* SunSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524E6448E6CD15ACE2AA31EC /* SunSettings.swift */; };
@@ -18,6 +20,7 @@
 		769FBDF0F0E7FF2DC61D6AB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32569F1B104EB3ACD497659C /* Assets.xcassets */; };
 		76CD3C2C461EB4841FCD610D /* SunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FDE7F6E8B4098B83851D6B6 /* SunTests.swift */; };
 		7E0F3FD948223A4B9D22A3D9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 075A9E9DE1439EFE54BC476F /* PrivacyInfo.xcprivacy */; };
+		83BB5E8207E5BB58782F342C /* SpecialTimes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462A9B047B859DF5C0E0B215 /* SpecialTimes.swift */; };
 		95B16C71A7A9702595700B96 /* FuzzyTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */; };
 		A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */; };
 		AA2A56DB8B9CD30AC2D4F899 /* FuzzyBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */; };
@@ -43,7 +46,9 @@
 		2031CBBBEDCCF3F689EAD285 /* CalendarGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGrid.swift; sourceTree = "<group>"; };
 		32569F1B104EB3ACD497659C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3AB764659BCAC1C6A9533FAE /* Clock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
+		3F71DF1AA3F65646134B60B1 /* SpecialTimesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialTimesSection.swift; sourceTree = "<group>"; };
 		4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTimeTests.swift; sourceTree = "<group>"; };
+		462A9B047B859DF5C0E0B215 /* SpecialTimes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialTimes.swift; sourceTree = "<group>"; };
 		4A8391076FAEB2905D423F44 /* Personality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personality.swift; sourceTree = "<group>"; };
 		518C89C64E34D69A91490977 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		524E6448E6CD15ACE2AA31EC /* SunSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunSettings.swift; sourceTree = "<group>"; };
@@ -51,6 +56,7 @@
 		7ACBE7A6AF53EFC0EA068E9A /* FuzzyBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyBarApp.swift; sourceTree = "<group>"; };
 		7EE08C2FF3B8DFAF0EB616DA /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRegressionTests.swift; sourceTree = "<group>"; };
+		954874F52C1BE644E1FFDC5C /* SpecialTimesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialTimesTests.swift; sourceTree = "<group>"; };
 		CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTime.swift; sourceTree = "<group>"; };
 		E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FuzzyBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2D60058A591C7B6666A279 /* FuzzyBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FuzzyBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +86,8 @@
 				EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */,
 				4A8391076FAEB2905D423F44 /* Personality.swift */,
 				518C89C64E34D69A91490977 /* SettingsView.swift */,
+				462A9B047B859DF5C0E0B215 /* SpecialTimes.swift */,
+				3F71DF1AA3F65646134B60B1 /* SpecialTimesSection.swift */,
 				EDABA1B83D3AAF56EC1A1D33 /* Sun.swift */,
 				524E6448E6CD15ACE2AA31EC /* SunSettings.swift */,
 				FAABB1BEB611FF49CD374907 /* SunView.swift */,
@@ -94,6 +102,7 @@
 				4220F4D4CF3F80E74FDFAD04 /* FuzzyTimeTests.swift */,
 				ED1379B2D6AF7BDB43D67059 /* PersonalityTests.swift */,
 				823D8C29935D73018B78AA82 /* ReviewRegressionTests.swift */,
+				954874F52C1BE644E1FFDC5C /* SpecialTimesTests.swift */,
 				0FDE7F6E8B4098B83851D6B6 /* SunTests.swift */,
 			);
 			path = FuzzyBarTests;
@@ -238,6 +247,8 @@
 				766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */,
 				BB649E8E1636670A4E253035 /* Personality.swift in Sources */,
 				64816686DAFB23425652BFAB /* SettingsView.swift in Sources */,
+				83BB5E8207E5BB58782F342C /* SpecialTimes.swift in Sources */,
+				24E09F039C92356B626E9062 /* SpecialTimesSection.swift in Sources */,
 				5863061CC74788DDF224249D /* Sun.swift in Sources */,
 				4C45A9D129257D2E9951EB51 /* SunSettings.swift in Sources */,
 				44108A0AA9B5496CD5C3021F /* SunView.swift in Sources */,
@@ -252,6 +263,7 @@
 				682CD32C35DCE363532AA143 /* FuzzyTimeTests.swift in Sources */,
 				50D9DC7280F2FF3BE7591A31 /* PersonalityTests.swift in Sources */,
 				A92817D38A1D54B4C6912E82 /* ReviewRegressionTests.swift in Sources */,
+				31B4C8CD3DF4DCD51B277FAC /* SpecialTimesTests.swift in Sources */,
 				76CD3C2C461EB4841FCD610D /* SunTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
