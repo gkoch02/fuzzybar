@@ -101,6 +101,15 @@ final class CustomPersonalityTests: XCTestCase {
                     .formatNeedsPlaceholders)
         assertFails(#"{"name": "X", "slots": [\#(twelve)], "hours": [\#(hours)], "nextHourFrom": 12}"#,
                     .nextHourOutOfRange(12))
+        // Escaped newlines are blank to the eye, and the menubar has one line.
+        assertFails(#"{"name": "\n", "slots": [\#(twelve)], "hours": [\#(hours)]}"#, .missing("name"))
+        let newlineSlot = (["s1", "\\n"] + (3...12).map { "s\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
+        assertFails(#"{"name": "X", "slots": [\#(newlineSlot)], "hours": [\#(hours)]}"#, .emptyEntry("slots", index: 1))
+        let brokenHour = (["h0", "h1", "one\\ntwo"] + (3..<12).map { "h\($0)" }).map { "\"\($0)\"" }.joined(separator: ",")
+        assertFails(#"{"name": "X", "slots": [\#(twelve)], "hours": [\#(brokenHour)]}"#, .lineBreak("hours", index: 2))
+        assertFails(#"{"name": "X", "format": "{phrase}\n{hour}", "slots": [\#(twelve)], "hours": [\#(hours)]}"#,
+                    .lineBreak("format", index: nil))
+        assertFails(#"{"name": "Pi\rrate", "slots": [\#(twelve)], "hours": [\#(hours)]}"#, .lineBreak("name", index: nil))
         XCTAssertEqual(CustomPersonality.ImportError.wrongCount("slots", expected: "12 phrases", found: 11).errorDescription,
                        "\"slots\" needs 12 phrases, this file has 11.")
     }

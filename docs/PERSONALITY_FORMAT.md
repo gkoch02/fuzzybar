@@ -62,6 +62,9 @@ written.
 - **Length.** The menubar has room for about 30 characters before the
   notch on some MacBooks hides the rest. FuzzyBar imports longer ones but
   says which reading is longest.
+- **One line.** The menubar shows a single line, so a line break anywhere
+  in the name, `format`, a slot or an hour is refused, and so is an entry
+  that's only spaces or line breaks.
 - **Updating.** Importing a file whose name matches one you already have
   replaces it, so edit, import again, and look at the menubar.
 - **Special times** still win: at a special time, and at the first minute

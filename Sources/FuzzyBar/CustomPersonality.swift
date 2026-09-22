@@ -60,6 +60,7 @@ extension CustomPersonality {
         case missing(String)
         case wrongCount(String, expected: String, found: Int)
         case emptyEntry(String, index: Int)
+        case lineBreak(String, index: Int?)
         case formatNeedsPlaceholders
         case nextHourOutOfRange(Int)
 
@@ -75,6 +76,9 @@ extension CustomPersonality {
                 return "\"\(key)\" needs \(expected), this file has \(found)."
             case let .emptyEntry(key, index):
                 return "Entry \(index + 1) of \"\(key)\" is empty."
+            case let .lineBreak(key, index):
+                let what = index.map { "Entry \($0 + 1) of \"\(key)\"" } ?? "\"\(key)\""
+                return "\(what) has a line break, and the menubar has only one line."
             case .formatNeedsPlaceholders:
                 return "\"format\" needs both {phrase} and {hour}."
             case let .nextHourOutOfRange(n):
@@ -89,9 +93,11 @@ extension CustomPersonality {
         let file: File
         do { file = try JSONDecoder().decode(File.self, from: data) } catch { throw ImportError.notJSON }
         if let v = file.version, v > formatVersion { throw ImportError.newerVersion(v) }
-        guard let name = file.name?.trimmingCharacters(in: .whitespaces), !name.isEmpty else {
+        // Blank means blank to the eye: an escaped "\n" counts.
+        guard let name = file.name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
             throw ImportError.missing("name")
         }
+        if name.hasLineBreak { throw ImportError.lineBreak("name", index: nil) }
         guard let slots = file.slots else { throw ImportError.missing("slots") }
         guard slots.count == 12 else { throw ImportError.wrongCount("slots", expected: "12 phrases", found: slots.count) }
         guard let hours = file.hours else { throw ImportError.missing("hours") }
@@ -99,12 +105,14 @@ extension CustomPersonality {
             throw ImportError.wrongCount("hours", expected: "12 or 24 names", found: hours.count)
         }
         for (key, list) in [("slots", slots), ("hours", hours)] {
-            if let i = list.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces).isEmpty }) {
+            if let i = list.firstIndex(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
                 throw ImportError.emptyEntry(key, index: i)
             }
+            if let i = list.firstIndex(where: \.hasLineBreak) { throw ImportError.lineBreak(key, index: i) }
         }
         let format = file.format ?? "{phrase} {hour}"
         guard format.contains("{phrase}"), format.contains("{hour}") else { throw ImportError.formatNeedsPlaceholders }
+        if format.hasLineBreak { throw ImportError.lineBreak("format", index: nil) }
         let nextHourFrom = file.nextHourFrom ?? 7
         guard (1...11).contains(nextHourFrom) else { throw ImportError.nextHourOutOfRange(nextHourFrom) }
         return CustomPersonality(name: name, format: format, slots: slots, hours: hours, nextHourFrom: nextHourFrom)
@@ -132,6 +140,10 @@ extension CustomPersonality {
         """
         return Data(body.utf8)
     }
+}
+
+private extension String {
+    var hasLineBreak: Bool { unicodeScalars.contains { CharacterSet.newlines.contains($0) } }
 }
 
 // MARK: - Templates
