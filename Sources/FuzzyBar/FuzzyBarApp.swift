@@ -22,7 +22,6 @@ struct PopoverView: View {
     let now: Date
     @ObservedObject var sun: SunSettings
     let openSettings: () -> Void
-    @State private var popover = PopoverWindow()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -50,7 +49,7 @@ struct PopoverView: View {
                     let reopening = SettingsWindow.current.flatMap { $0.isVisible ? nil : $0 }
                     reopening?.center()
                     // A menu closes when you pick an item; the popover should too.
-                    popover.window?.close()
+                    StatusItem.togglePopover()
                     NSApp.activate(ignoringOtherApps: true)
                     openSettings()
                     if let reopening { SettingsWindow.clearFocus(reopening) }
@@ -60,7 +59,6 @@ struct PopoverView: View {
             .padding(8)
         }
         .frame(width: 270)
-        .background(PopoverWindow.Reader(popover: popover))
     }
 
     private func menuRow(_ title: String, action: @escaping () -> Void) -> some View {
@@ -87,27 +85,30 @@ private struct MenuRowButton: View {
 }
 
 /// MenuBarExtra has no API to close its window, and clicking a row inside it
-/// doesn't close it the way choosing a menu item would. This holds the
-/// window so a row can close it itself.
-final class PopoverWindow {
-    weak var window: NSWindow?
+/// doesn't close it the way choosing a menu item would. Closing the window
+/// directly leaves SwiftUI thinking it's still open, so the menubar item
+/// stays highlighted and the next click only "closes" it. Clicking the item's
+/// own button instead is what the user's click does, so SwiftUI closes it and
+/// keeps count. FuzzyBar has one status item; if its button can't be found,
+/// the popover just stays open.
+enum StatusItem {
+    static func togglePopover() {
+        button?.performClick(nil)
+    }
 
-    struct Reader: NSViewRepresentable {
-        let popover: PopoverWindow
-        func makeNSView(context: Context) -> NSView { View(popover: popover) }
-        func updateNSView(_ nsView: NSView, context: Context) {}
-
-        private final class View: NSView {
-            let popover: PopoverWindow
-            init(popover: PopoverWindow) {
-                self.popover = popover
-                super.init(frame: .zero)
-            }
-            required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
-            override func viewDidMoveToWindow() {
-                super.viewDidMoveToWindow()
-                popover.window = window
-            }
+    private static var button: NSStatusBarButton? {
+        for window in NSApp.windows {
+            if let button = find(in: window.contentView) { return button }
         }
+        return nil
+    }
+
+    private static func find(in view: NSView?) -> NSStatusBarButton? {
+        guard let view else { return nil }
+        if let button = view as? NSStatusBarButton { return button }
+        for subview in view.subviews {
+            if let button = find(in: subview) { return button }
+        }
+        return nil
     }
 }
