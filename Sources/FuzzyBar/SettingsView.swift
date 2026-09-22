@@ -4,6 +4,7 @@ import ServiceManagement
 struct SettingsView: View {
     @StateObject private var login = LoginSettings()
     @EnvironmentObject private var clock: Clock
+    @EnvironmentObject private var sun: SunSettings
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
@@ -47,6 +48,10 @@ struct SettingsView: View {
 
             Divider()
 
+            sunSection
+
+            Divider()
+
             VStack(alignment: .leading, spacing: 6) {
                 Toggle("Start at login", isOn: Binding(
                     get: { login.isRequested }, set: { login.setEnabled($0) }
@@ -77,6 +82,42 @@ struct SettingsView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             login.refresh()
         }
+    }
+}
+
+extension SettingsView {
+    private var zoneCity: String? {
+        SunSettings.zoneLocation(.current) == nil ? nil : SunSettings.cityName(.current)
+    }
+
+    @ViewBuilder private var sunSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle("Show sunrise and sunset", isOn: $sun.isShown)
+            if sun.isShown {
+                Picker("Location", selection: $sun.usesCustomLocation) {
+                    Text(zoneCity.map { "Time zone (\($0))" } ?? "Time zone").tag(false)
+                    Text("Coordinates").tag(true)
+                }
+                if sun.usesCustomLocation {
+                    HStack {
+                        TextField("Latitude", value: $sun.latitude, format: .number)
+                        TextField("Longitude", value: $sun.longitude, format: .number)
+                    }
+                    Text(sun.customLocation == nil
+                         ? "Enter a latitude and longitude; north and east are positive, so Boston is 42.36, -71.06."
+                         : "North and east are positive.")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text(zoneCity == nil
+                         ? "\(TimeZone.current.identifier) has no reference city, so choose Coordinates."
+                         : "Worked out for the time zone's city rather than where you are, so treat it as fuzzy.")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
