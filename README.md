@@ -21,9 +21,9 @@ builds natively for Apple Silicon, and has no dependencies.
 
 - Time in words in the menubar, updated when the phrase changes
 - Seven personalities, from plain spoken English to Mission Control and Eldritch
-- Popover with the exact time, full date, today's sunrise and sunset, and a
-  month calendar with week numbers
+- Popover with the exact time, full date, and a month calendar with week numbers
 - Start at login, via the system Login Items list
+- Today's sunrise and sunset in the popover, without asking for your location
 - No Dock icon, no network, no analytics, nothing running that doesn't need to
 
 ## Requirements
