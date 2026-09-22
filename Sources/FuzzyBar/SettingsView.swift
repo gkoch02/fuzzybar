@@ -72,9 +72,31 @@ struct SettingsView: View {
         }
         .padding(24)
         .frame(width: 320)
+        .background(SettingsWindow.Reader())
         .onAppear { login.refresh() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             login.refresh()
+        }
+    }
+}
+
+/// The Settings scene gives no handle on its window, and a menubar-only app has no
+/// main window for AppKit to place a new one against, so it lands wherever the
+/// popover was. This keeps a weak reference so the popover can center it.
+enum SettingsWindow {
+    static weak var current: NSWindow?
+
+    struct Reader: NSViewRepresentable {
+        func makeNSView(context: Context) -> NSView { View() }
+        func updateNSView(_ nsView: NSView, context: Context) {}
+
+        private final class View: NSView {
+            override func viewDidMoveToWindow() {
+                super.viewDidMoveToWindow()
+                guard let window, window !== SettingsWindow.current else { return }
+                SettingsWindow.current = window
+                window.center()
+            }
         }
     }
 }
