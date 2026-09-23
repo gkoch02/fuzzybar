@@ -58,7 +58,9 @@ No certificates, keys, or notarization credentials are stored in this repo.
 
 There is also an Xcode project, `FuzzyBar.xcodeproj`, generated from `project.yml`
 with [XcodeGen](https://github.com/yonaskolb/XcodeGen). It exists for Mac App
-Store archives (App Sandbox, automatic signing, the asset-catalog icon).
+Store archives (App Sandbox, automatic signing, the asset-catalog icon). After
+**Product → Archive**, run `Tools/check_archive.sh` before uploading: it fails a
+Debug archive or a build number the project has moved past.
 Day-to-day builds and tests still go through SwiftPM and `build.sh`.
 
 ## How the fuzzy time works
