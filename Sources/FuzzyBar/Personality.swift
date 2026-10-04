@@ -1,17 +1,9 @@
 import Foundation
 
 /// The phrasing styles ported from LittleFuzzyClock, plus FuzzyBar's own
-/// spoken-English default. LittleFuzzyClock renders the phrase and the hour
-/// on two lines of an e-ink panel; the menubar gets one line, so each
-/// personality also says how to join the two halves.
-///
-/// Four of them were named after franchises (Klingon, Belter, HAL 9000,
-/// Cthulhu) until the App Store submission. HAL 9000 and Cthulhu only ever
-/// borrowed a label, so they kept their tables and became Mission Control
-/// and Eldritch. Klingon and Belter went further than a name: their phrases
-/// were tlhIngan Hol numerals and Lang Belta particles, the languages
-/// themselves rather than a reference to them. Both are withdrawn rather
-/// than rewritten. Vague, FuzzyBar's own, came later.
+/// Spoken (the default) and Vague. LittleFuzzyClock renders the phrase and
+/// the hour on two lines of an e-ink panel; the menubar gets one line, so
+/// each personality also says how to join the two halves.
 enum Personality: String, CaseIterable, Identifiable {
     case spoken
     case classic
@@ -25,11 +17,10 @@ enum Personality: String, CaseIterable, Identifiable {
     static let `default`: Personality = .spoken
     static let defaultsKey = "personality"
 
-    /// Raw values written by builds from before the rename. A preference
-    /// file is the user's choice, not ours to drop, so map it forward.
-    /// "klingon" and "belter" are deliberately absent: those two were
-    /// withdrawn rather than renamed, and nothing survives to map them to,
-    /// so they fall back to the default the way an unknown value does.
+    /// Raw values from before Mission Control and Eldritch were renamed, so
+    /// an older preference maps forward. The withdrawn "klingon" and
+    /// "belter" are absent on purpose: they fall back to the default like
+    /// any unknown value.
     private static let renamed: [String: Personality] = [
         "hal": .missionControl,
         "cthulhu": .eldritch,
@@ -44,7 +35,6 @@ enum Personality: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    /// Name shown in Preferences.
     var title: String {
         switch self {
         case .spoken: return "Spoken"
@@ -126,7 +116,6 @@ enum Personality: String, CaseIterable, Identifiable {
     /// so the "almost" slot always names the next hour.
     var hourAdvanceSlot: Int { self == .german ? 5 : 7 }
 
-    /// Joiner between the phrase and the hour on the single menubar line.
     var joiner: String {
         switch self {
         case .missionControl, .eldritch: return ", "
@@ -134,7 +123,7 @@ enum Personality: String, CaseIterable, Identifiable {
         }
     }
 
-    private static let englishHours = [
+    static let englishHours = [
         "twelve", "one", "two", "three", "four", "five",
         "six", "seven", "eight", "nine", "ten", "eleven",
     ]

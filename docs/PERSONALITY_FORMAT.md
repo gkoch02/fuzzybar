@@ -15,7 +15,7 @@ TextEdit.
    It appears in the Personality picker below the built-in ones.
 
 To change it later, edit the same file and import it again: a file whose
-name line matches one you already have replaces it.
+name line matches one you already have, ignoring case, replaces it.
 [`Examples/Pirate.fuzzybar`](../Examples/Pirate.fuzzybar) is a complete one.
 
 ## What's in the file
@@ -38,7 +38,9 @@ next hour from: :35
 ```
 
 Blank lines, and lines starting with `#`, are ignored, so templates carry
-their instructions as `#` notes. The order of the lines doesn't matter.
+their instructions as `#` notes. The order of the lines doesn't matter, but
+each label can appear only once. `name`, `format` and `next hour from` are
+the only settings, in any case; any other is reported as a mistake.
 Everything after a label is the words, exactly as written: apostrophes,
 commas and curly quotes need no escaping.
 
@@ -48,7 +50,7 @@ commas and curly quotes need no escaping.
 | `:00` to `:55` | yes, all twelve | What the minutes say. |
 | `12`, `1` to `11` | yes, all twelve | The hour names. Or `0` to `23`: see below. |
 | `format:` | no | How the two go together. Needs `{phrase}` and `{hour}`. Default `{phrase} {hour}`. |
-| `next hour from:` | no | The minute from which the hour named is the next one, `:05` to `:55`. Default `:35`. |
+| `next hour from:` | no | The minute from which the hour named is the next one, `:05` to `:55` (the colon is optional). Default `:35`. |
 
 ### How a time is read
 
@@ -63,7 +65,8 @@ it uses `:25`.
 
 Twelve hour lines are used for the morning and the evening. If they should
 differ, like "nine am" and "nine pm", or 24-hour styles like "2100 HOURS",
-write 24 lines from `0` (midnight) to `23` instead.
+write 24 lines from `0` (midnight) to `23` instead. Any `0` or `13` to `23`
+line makes the file a 24-hour one, which then needs all 24.
 
 `format` puts the two together, so a language that says the hour first can
 use `{hour} {phrase}`. Anything else in it, like `, arr`, is kept as written.

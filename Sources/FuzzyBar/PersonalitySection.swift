@@ -7,12 +7,6 @@ enum PersonalityChoice: Hashable {
     case custom(UUID)
 }
 
-/// What the last import or save said, shown under the personality example.
-struct PersonalityMessage: Equatable {
-    var text: String
-    var isError = false
-}
-
 /// Preferences' personality picker, with importing and saving templates.
 struct PersonalitySection: View {
     @EnvironmentObject private var clock: Clock
@@ -110,28 +104,5 @@ struct PersonalityFile: FileDocument {
     }
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         FileWrapper(regularFileWithContents: data)
-    }
-}
-
-extension Clock {
-    /// Reads, checks and imports a personality file, and says how it went
-    /// in words for Preferences. Import and drag-and-drop both land here.
-    func importPersonality(from url: URL) -> PersonalityMessage {
-        let scoped = url.startAccessingSecurityScopedResource()
-        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        do {
-            let personality = try CustomPersonality.decode(try Data(contentsOf: url))
-            let replaced = importPersonality(personality)
-            var text = replaced ? "Updated \(personality.name)." : "Imported \(personality.name)."
-            let longest = personality.longestReading
-            if longest.count > SpecialTime.maxLength {
-                text += " Its longest reading, \"\(longest)\", is \(longest.count) characters; past \(SpecialTime.maxLength) it can end up behind the notch."
-            }
-            return PersonalityMessage(text: text)
-        } catch let error as CustomPersonality.ImportError {
-            return PersonalityMessage(text: error.errorDescription ?? "That file couldn't be imported.", isError: true)
-        } catch {
-            return PersonalityMessage(text: "Couldn't read \(url.lastPathComponent).", isError: true)
-        }
     }
 }

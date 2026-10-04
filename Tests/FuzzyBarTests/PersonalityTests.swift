@@ -141,8 +141,8 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(tick(at(9, 0)), at(9, 5).addingTimeInterval(0.05))
     }
 
-    /// Minutes 57-59 must name the *next* hour in every personality; the
-    /// slot cap at 11 is what keeps them from wrapping to "just after".
+    /// Minutes 57-59 must name the *next* hour in every personality: 58 and
+    /// 59 round past the last slot, and the cap at 11 keeps them on it.
     func testAlmostNextHourNeverWraps() {
         for personality in Personality.allCases where personality.slotPhrases != nil {
             let slots = personality.slotPhrases!
@@ -176,9 +176,7 @@ final class PersonalityTests: XCTestCase {
     /// 10:03 boundary to the ported 10:00 one, or the menubar stays stale.
     @MainActor
     func testChangingPersonalityReschedulesTick() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         // Clock phrases in the current calendar, so build the date there too.
         var now = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: 58))!
         let clock = Clock(dateProvider: { now }, defaults: defaults)
@@ -195,9 +193,7 @@ final class PersonalityTests: XCTestCase {
 
     @MainActor
     func testClockPersistsPersonalityAndRephrases() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         let date = cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: 30))!
@@ -239,9 +235,7 @@ final class PersonalityTests: XCTestCase {
 
     @MainActor
     func testClockMigratesAndRewritesAPreRenameChoice() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         let date = Date()
 
         defaults.set("cthulhu", forKey: Personality.defaultsKey)
@@ -256,9 +250,7 @@ final class PersonalityTests: XCTestCase {
     /// back to Spoken and stops carrying a value it can no longer honour.
     @MainActor
     func testClockFallsBackFromAWithdrawnChoice() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         let date = Date()
 
         for retired in ["klingon", "belter"] {

@@ -57,10 +57,9 @@ final class Clock: ObservableObject {
         let active = defaults.string(forKey: Self.customActiveKey).flatMap(UUID.init(uuidString:))
         customPersonalityID = customs.contains { $0.id == active } ? active : nil
         if active != nil, customPersonalityID == nil { defaults.removeObject(forKey: Self.customActiveKey) }
-        // A pre-rename value ("hal", "cthulhu") reads back as the personality
-        // it became, and a withdrawn one ("klingon", "belter") reads back as
-        // the default; either way write the current spelling so it only
-        // migrates once. didSet does not run during init, so do it by hand.
+        // A renamed or withdrawn value read back as something else; write the
+        // current spelling so it only migrates once. didSet does not run
+        // during init, so do it by hand.
         if let saved, saved != personality.rawValue {
             defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
         }
@@ -112,6 +111,27 @@ final class Clock: ObservableObject {
         customPersonalities.append(incoming)
         customPersonalityID = incoming.id
         return false
+    }
+
+    /// Reads, checks and imports a personality file, and says how it went
+    /// in words for Preferences. Import and drag-and-drop both land here.
+    func importPersonality(from url: URL) -> PersonalityMessage {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let personality = try CustomPersonality.decode(try Data(contentsOf: url))
+            let replaced = importPersonality(personality)
+            var text = replaced ? "Updated \(personality.name)." : "Imported \(personality.name)."
+            let longest = personality.longestReading
+            if longest.count > SpecialTime.maxLength {
+                text += " Its longest reading, \"\(longest)\", is \(longest.count) characters; past \(SpecialTime.maxLength) it can end up behind the notch."
+            }
+            return PersonalityMessage(text: text)
+        } catch let error as CustomPersonality.ImportError {
+            return PersonalityMessage(text: error.errorDescription ?? "That file couldn't be imported.", isError: true)
+        } catch {
+            return PersonalityMessage(text: "Couldn't read \(url.lastPathComponent).", isError: true)
+        }
     }
 
     func removePersonality(id: UUID) {
@@ -170,4 +190,10 @@ final class Clock: ObservableObject {
         RunLoop.main.add(t, forMode: .common)
         timer = t
     }
+}
+
+/// What the last import or save said, shown under the personality example.
+struct PersonalityMessage: Equatable {
+    var text: String
+    var isError = false
 }

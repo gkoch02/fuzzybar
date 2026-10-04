@@ -138,9 +138,7 @@ final class CustomPersonalityTests: XCTestCase {
 
     @MainActor
     func testImportSwitchesReplacesByNameAndRemoveFallsBack() throws {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         let now = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 22, hour: 20, minute: 40))!
         let clock = Clock(dateProvider: { now }, defaults: defaults)
         clock.personality = .german
@@ -171,11 +169,39 @@ final class CustomPersonalityTests: XCTestCase {
         XCTAssertNil(Clock(dateProvider: { now }, defaults: defaults).customPersonalityID)
     }
 
+    /// What Import and drag-and-drop say: imported or updated, a warning
+    /// when a reading could run behind the notch, and why a file failed.
+    @MainActor
+    func testImportingAFileSaysHowItWent() throws {
+        let clock = Clock(dateProvider: { Date() }, defaults: scratchDefaults())
+        XCTAssertEqual(clock.importPersonality(from: pirateURL), PersonalityMessage(text: "Imported Pirate."))
+        XCTAssertEqual(clock.importPersonality(from: pirateURL), PersonalityMessage(text: "Updated Pirate."))
+
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: folder) }
+        func written(_ name: String, _ text: String) throws -> URL {
+            let url = folder.appendingPathComponent(name)
+            try Data(text.utf8).write(to: url)
+            return url
+        }
+
+        let long = try written("Long.fuzzybar", file(minutes: minutes.replacingOccurrences(of: "s12", with: "a very long way from anywhere")))
+        let warned = clock.importPersonality(from: long)
+        XCTAssertFalse(warned.isError)
+        XCTAssertTrue(warned.text.hasPrefix("Imported X. Its longest reading, \"a very long way from anywhere h1"), warned.text)
+        XCTAssertTrue(warned.text.hasSuffix("is 33 characters; past 30 it can end up behind the notch."), warned.text)
+
+        XCTAssertEqual(clock.importPersonality(from: try written("Bad.fuzzybar", "name: Bad\n")),
+                       PersonalityMessage(text: "The file needs a line for :00.", isError: true))
+        XCTAssertEqual(clock.importPersonality(from: folder.appendingPathComponent("Gone.fuzzybar")),
+                       PersonalityMessage(text: "Couldn't read Gone.fuzzybar.", isError: true))
+        XCTAssertEqual(clock.customPersonalities.map(\.name), ["Pirate", "X"])
+    }
+
     @MainActor
     func testAMissingActiveCustomFallsBackAtLaunch() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         defaults.set(UUID().uuidString, forKey: Clock.customActiveKey)
         let clock = Clock(dateProvider: { Date() }, defaults: defaults)
         XCTAssertNil(clock.customPersonalityID)

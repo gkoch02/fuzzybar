@@ -1,9 +1,8 @@
 import Foundation
 import UniformTypeIdentifiers
 
-/// A personality from a file the user wrote: the same twelve-slot engine the
-/// ported personalities use, with every word supplied. FuzzyBar ships no
-/// custom personalities, and nothing in one comes from us.
+/// A personality from a file the user wrote, with every word supplied. The
+/// built-in slot-table personalities run on this too (`Personality.template`).
 struct CustomPersonality: Codable, Equatable, Identifiable {
     var id = UUID()
     var name: String
@@ -18,10 +17,11 @@ struct CustomPersonality: Codable, Equatable, Identifiable {
     /// to") for English, 5 for German's "fünf vor halb".
     var nextHourFrom: Int
 
-    static let fileExtension = "fuzzybar"
     static let contentType = UTType(exportedAs: "dev.plumpbug.fuzzybar.personality", conformingTo: .plainText)
 
     func phrase(hour: Int, minute: Int) -> String {
+        // 58 and 59 round to 12, past the last slot; they stay on the
+        // "almost" one, which already names the next hour.
         let slot = min(Int((Double(minute) / 5.0).rounded()), 11)
         let h24 = ((slot < nextHourFrom ? hour : hour + 1) % 24 + 24) % 24
         let hourText = hours.count == 24 ? hours[h24] : hours[h24 % 12]
@@ -201,8 +201,8 @@ extension CustomPersonality {
             "# How the two halves go together in the menubar.",
             "format: \(format)",
             "",
-            "# The minute from which the hour named is the next one: at :35,",
-            "# 8:35 is \"twenty-five to nine\".",
+            "# The minute from which the hour named is the next one: with :35,",
+            "# 8:35 names nine, not eight.",
             "next hour from: \(Self.minuteLabels[nextHourFrom])",
             "",
             "# What the minutes say. Each line covers the five minutes around it,",
@@ -223,8 +223,9 @@ extension CustomPersonality {
 // MARK: - Templates
 
 extension Personality {
-    /// This personality written out as a custom one, for Save as Template.
-    /// Spoken and Vague don't use the twelve-slot table, so they have none.
+    /// This personality as a custom one: what Save as Template writes, and
+    /// what `FuzzyTime` phrases it with. Spoken and Vague don't use the
+    /// twelve-slot table, so they have none.
     var template: CustomPersonality? {
         guard let slots = slotPhrases else { return nil }
         let hours = (0..<24).map { hourText(displayHour: $0) }

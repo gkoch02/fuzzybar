@@ -7,7 +7,6 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-TEAM_ID="FGG98L437R"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 swift build -c release --arch arm64
@@ -33,7 +32,7 @@ else
         --entitlements FuzzyBar.entitlements \
         --sign "$SIGN_IDENTITY" "$APP_STAGE"
     codesign --verify --strict "$APP_STAGE"
-    SIGN_NOTE="signed with $SIGN_IDENTITY, team $TEAM_ID"
+    SIGN_NOTE="signed with $SIGN_IDENTITY"
 fi
 
 APP="build/FuzzyBar.app"

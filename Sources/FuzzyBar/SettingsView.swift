@@ -69,7 +69,6 @@ struct SettingsView: View {
         .padding(24)
         .frame(width: 320)
         .background(SettingsWindow.Reader())
-        // A personality file dropped anywhere on the window imports it.
         .dropDestination(for: URL.self) { urls, _ in
             guard let url = urls.first else { return false }
             personalityMessage = clock.importPersonality(from: url)

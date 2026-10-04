@@ -19,12 +19,10 @@
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<!-- UserDefaults, reason CA92.1 (the app's own defaults, not shared
-		     with an app group). Two writers: the personality preference
-		     (Personality.defaultsKey, written by Clock) and SwiftUI's own
-		     Settings scene, which remembers the Preferences window frame.
-		     Declared even though the second is framework behaviour: the
-		     binary links the API either way, and under-declaring is what
-		     gets uploads rejected (ITMS-91053). -->
+		     with an app group): the app's own preferences, written by Clock
+		     and SunSettings, and SwiftUI's Settings scene, which remembers
+		     the Preferences window frame. Under-declaring is what gets
+		     uploads rejected (ITMS-91053). -->
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
