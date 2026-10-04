@@ -14,7 +14,12 @@ struct FuzzyBarApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Settings { SettingsView().environmentObject(clock).environmentObject(sun) }
+        Settings {
+            SettingsView()
+                .environmentObject(clock)
+                .environmentObject(clock.personalities)
+                .environmentObject(sun)
+        }
     }
 }
 

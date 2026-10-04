@@ -7,8 +7,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "FuzzyBar",
-            path: "Sources/FuzzyBar",
-            swiftSettings: [.unsafeFlags(["-parse-as-library"])]
+            path: "Sources/FuzzyBar"
         ),
         .testTarget(
             name: "FuzzyBarTests",

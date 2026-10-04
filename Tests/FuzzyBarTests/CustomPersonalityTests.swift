@@ -141,41 +141,42 @@ final class CustomPersonalityTests: XCTestCase {
         let defaults = scratchDefaults()
         let now = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 22, hour: 20, minute: 40))!
         let clock = Clock(dateProvider: { now }, defaults: defaults)
-        clock.personality = .german
+        let store = clock.personalities
+        store.personality = .german
 
         let pirate = try CustomPersonality.decode(Data(contentsOf: pirateURL))
-        XCTAssertFalse(clock.importPersonality(pirate))
+        XCTAssertFalse(store.importPersonality(pirate))
         XCTAssertEqual(clock.fuzzy, "twenty 'fore nine, arr")
-        let id = try XCTUnwrap(clock.customPersonalityID)
+        let id = try XCTUnwrap(store.customPersonalityID)
 
         // Same name, different case: an update, not a second entry.
         var edited = pirate
         edited.name = "PIRATE"
         edited.format = "{phrase} {hour}, yarr"
-        XCTAssertTrue(clock.importPersonality(edited))
-        XCTAssertEqual(clock.customPersonalities.count, 1)
-        XCTAssertEqual(clock.customPersonalityID, id)
+        XCTAssertTrue(store.importPersonality(edited))
+        XCTAssertEqual(store.customPersonalities.count, 1)
+        XCTAssertEqual(store.customPersonalityID, id)
         XCTAssertEqual(clock.fuzzy, "twenty 'fore nine, yarr")
 
         // Survives a relaunch.
         let reloaded = Clock(dateProvider: { now }, defaults: defaults)
-        XCTAssertEqual(reloaded.customPersonalityID, id)
+        XCTAssertEqual(reloaded.personalities.customPersonalityID, id)
         XCTAssertEqual(reloaded.fuzzy, "twenty 'fore nine, yarr")
 
         // Removing the active one goes back to the built-in it replaced.
-        clock.removePersonality(id: id)
-        XCTAssertNil(clock.customPersonalityID)
+        store.removePersonality(id: id)
+        XCTAssertNil(store.customPersonalityID)
         XCTAssertEqual(clock.fuzzy, "zwanzig vor neun")
-        XCTAssertNil(Clock(dateProvider: { now }, defaults: defaults).customPersonalityID)
+        XCTAssertNil(PersonalityStore(defaults: defaults).customPersonalityID)
     }
 
     /// What Import and drag-and-drop say: imported or updated, a warning
     /// when a reading could run behind the notch, and why a file failed.
     @MainActor
     func testImportingAFileSaysHowItWent() throws {
-        let clock = Clock(dateProvider: { Date() }, defaults: scratchDefaults())
-        XCTAssertEqual(clock.importPersonality(from: pirateURL), PersonalityMessage(text: "Imported Pirate."))
-        XCTAssertEqual(clock.importPersonality(from: pirateURL), PersonalityMessage(text: "Updated Pirate."))
+        let store = PersonalityStore(defaults: scratchDefaults())
+        XCTAssertEqual(store.importPersonality(from: pirateURL), PersonalityMessage(text: "Imported Pirate."))
+        XCTAssertEqual(store.importPersonality(from: pirateURL), PersonalityMessage(text: "Updated Pirate."))
 
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -187,25 +188,24 @@ final class CustomPersonalityTests: XCTestCase {
         }
 
         let long = try written("Long.fuzzybar", file(minutes: minutes.replacingOccurrences(of: "s12", with: "a very long way from anywhere")))
-        let warned = clock.importPersonality(from: long)
+        let warned = store.importPersonality(from: long)
         XCTAssertFalse(warned.isError)
         XCTAssertTrue(warned.text.hasPrefix("Imported X. Its longest reading, \"a very long way from anywhere h1"), warned.text)
         XCTAssertTrue(warned.text.hasSuffix("is 33 characters; past 30 it can end up behind the notch."), warned.text)
 
-        XCTAssertEqual(clock.importPersonality(from: try written("Bad.fuzzybar", "name: Bad\n")),
+        XCTAssertEqual(store.importPersonality(from: try written("Bad.fuzzybar", "name: Bad\n")),
                        PersonalityMessage(text: "The file needs a line for :00.", isError: true))
-        XCTAssertEqual(clock.importPersonality(from: folder.appendingPathComponent("Gone.fuzzybar")),
+        XCTAssertEqual(store.importPersonality(from: folder.appendingPathComponent("Gone.fuzzybar")),
                        PersonalityMessage(text: "Couldn't read Gone.fuzzybar.", isError: true))
-        XCTAssertEqual(clock.customPersonalities.map(\.name), ["Pirate", "X"])
+        XCTAssertEqual(store.customPersonalities.map(\.name), ["Pirate", "X"])
     }
 
     @MainActor
     func testAMissingActiveCustomFallsBackAtLaunch() {
         let defaults = scratchDefaults()
-        defaults.set(UUID().uuidString, forKey: Clock.customActiveKey)
-        let clock = Clock(dateProvider: { Date() }, defaults: defaults)
-        XCTAssertNil(clock.customPersonalityID)
-        XCTAssertNil(defaults.string(forKey: Clock.customActiveKey))
+        defaults.set(UUID().uuidString, forKey: PersonalityStore.customActiveKey)
+        XCTAssertNil(PersonalityStore(defaults: defaults).customPersonalityID)
+        XCTAssertNil(defaults.string(forKey: PersonalityStore.customActiveKey))
     }
 
     /// Special times win over everything, a custom personality included,

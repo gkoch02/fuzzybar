@@ -5,39 +5,14 @@ import Combine
 @MainActor
 final class Clock: ObservableObject {
     @Published private(set) var now: Date
-    @Published var personality: Personality {
-        didSet {
-            defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
-            // Phrase boundaries differ between personalities (spoken flips at
-            // :58, the ported ones at :00), so the pending tick may be wrong.
-            scheduleNextTick()
-        }
-    }
     @Published var specialTimes: [SpecialTime] {
         didSet {
             SpecialTimes.save(specialTimes, to: defaults)
             scheduleNextTick()
         }
     }
-    /// Imported from files, in the order they came in.
-    @Published private(set) var customPersonalities: [CustomPersonality] {
-        didSet {
-            defaults.set(try? JSONEncoder().encode(customPersonalities), forKey: Self.customListKey)
-            if activeCustom == nil { customPersonalityID = nil }
-            scheduleNextTick()
-        }
-    }
-    /// The custom personality in use, if any; it stands in front of
-    /// `personality`, which stays where it was so removing the custom one
-    /// goes back to it.
-    @Published var customPersonalityID: UUID? {
-        didSet {
-            defaults.set(customPersonalityID?.uuidString, forKey: Self.customActiveKey)
-            scheduleNextTick()
-        }
-    }
-    static let customListKey = "customPersonalities"
-    static let customActiveKey = "customPersonality"
+    /// Owned here so a personality change can reschedule the tick.
+    let personalities: PersonalityStore
     private let defaults: UserDefaults
     private var timer: Timer?
     private var observers: [(NotificationCenter, NSObjectProtocol)] = []
@@ -48,20 +23,13 @@ final class Clock: ObservableObject {
         self.dateProvider = dateProvider
         self.defaults = defaults
         now = dateProvider()
-        let saved = defaults.string(forKey: Personality.defaultsKey)
-        personality = saved.flatMap(Personality.stored) ?? .default
+        personalities = PersonalityStore(defaults: defaults)
         specialTimes = SpecialTimes.load(from: defaults)
-        let customs = defaults.data(forKey: Self.customListKey)
-            .flatMap { try? JSONDecoder().decode([CustomPersonality].self, from: $0) } ?? []
-        customPersonalities = customs
-        let active = defaults.string(forKey: Self.customActiveKey).flatMap(UUID.init(uuidString:))
-        customPersonalityID = customs.contains { $0.id == active } ? active : nil
-        if active != nil, customPersonalityID == nil { defaults.removeObject(forKey: Self.customActiveKey) }
-        // A renamed or withdrawn value read back as something else; write the
-        // current spelling so it only migrates once. didSet does not run
-        // during init, so do it by hand.
-        if let saved, saved != personality.rawValue {
-            defaults.set(personality.rawValue, forKey: Personality.defaultsKey)
+        personalities.onChange = { [weak self] in
+            // Phrase boundaries differ between personalities (spoken flips at
+            // :58, the ported ones at :00), so the pending tick may be wrong.
+            self?.objectWillChange.send()
+            self?.scheduleNextTick()
         }
         scheduleNextTick()
         observe(.NSSystemClockDidChange, in: .default)
@@ -74,16 +42,9 @@ final class Clock: ObservableObject {
         for (center, token) in observers { center.removeObserver(token) }
     }
 
-    var activeCustom: CustomPersonality? { customPersonalities.first { $0.id == customPersonalityID } }
-
     var fuzzy: String {
-        Self.text(for: now, personality: personality, custom: activeCustom, specialTimes: specialTimes)
-    }
-
-    /// The active personality's phrase for a clock time, for the Preferences example.
-    func phrase(hour: Int, minute: Int) -> String {
-        activeCustom?.phrase(hour: hour, minute: minute)
-            ?? FuzzyTime.phrase(hour: hour, minute: minute, personality: personality)
+        Self.text(for: now, personality: personalities.personality, custom: personalities.activeCustom,
+                  specialTimes: specialTimes)
     }
 
     /// What the menubar reads at `date`: a special time wins over everything,
@@ -94,48 +55,6 @@ final class Clock: ObservableObject {
         guard let custom else { return FuzzyTime.phrase(for: date, calendar: calendar, personality: personality) }
         let c = calendar.dateComponents([.hour, .minute], from: date)
         return custom.phrase(hour: c.hour ?? 0, minute: c.minute ?? 0)
-    }
-
-    /// Adds an imported personality and switches to it. One with the same
-    /// name as an existing one replaces it, keeping its place, so editing a
-    /// file and importing it again updates it. Returns whether it replaced.
-    @discardableResult
-    func importPersonality(_ imported: CustomPersonality) -> Bool {
-        var incoming = imported
-        if let i = customPersonalities.firstIndex(where: { $0.name.caseInsensitiveCompare(imported.name) == .orderedSame }) {
-            incoming.id = customPersonalities[i].id
-            customPersonalities[i] = incoming
-            customPersonalityID = incoming.id
-            return true
-        }
-        customPersonalities.append(incoming)
-        customPersonalityID = incoming.id
-        return false
-    }
-
-    /// Reads, checks and imports a personality file, and says how it went
-    /// in words for Preferences. Import and drag-and-drop both land here.
-    func importPersonality(from url: URL) -> PersonalityMessage {
-        let scoped = url.startAccessingSecurityScopedResource()
-        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        do {
-            let personality = try CustomPersonality.decode(try Data(contentsOf: url))
-            let replaced = importPersonality(personality)
-            var text = replaced ? "Updated \(personality.name)." : "Imported \(personality.name)."
-            let longest = personality.longestReading
-            if longest.count > SpecialTime.maxLength {
-                text += " Its longest reading, \"\(longest)\", is \(longest.count) characters; past \(SpecialTime.maxLength) it can end up behind the notch."
-            }
-            return PersonalityMessage(text: text)
-        } catch let error as CustomPersonality.ImportError {
-            return PersonalityMessage(text: error.errorDescription ?? "That file couldn't be imported.", isError: true)
-        } catch {
-            return PersonalityMessage(text: "Couldn't read \(url.lastPathComponent).", isError: true)
-        }
-    }
-
-    func removePersonality(id: UUID) {
-        customPersonalities.removeAll { $0.id == id }
     }
 
     /// When the pending tick fires; exposed for tests.
@@ -181,7 +100,8 @@ final class Clock: ObservableObject {
     private func scheduleNextTick() {
         timer?.invalidate()
         let fireDate = Self.nextTick(after: dateProvider(), popoverVisible: popoverVisible,
-                                     personality: personality, custom: activeCustom, specialTimes: specialTimes)
+                                     personality: personalities.personality, custom: personalities.activeCustom,
+                                     specialTimes: specialTimes)
         let t = Timer(fire: fireDate, interval: 0, repeats: false) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
         }
@@ -192,8 +112,3 @@ final class Clock: ObservableObject {
     }
 }
 
-/// What the last import or save said, shown under the personality example.
-struct PersonalityMessage: Equatable {
-    var text: String
-    var isError = false
-}

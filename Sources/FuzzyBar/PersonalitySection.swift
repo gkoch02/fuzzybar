@@ -9,22 +9,22 @@ enum PersonalityChoice: Hashable {
 
 /// Preferences' personality picker, with importing and saving templates.
 struct PersonalitySection: View {
-    @EnvironmentObject private var clock: Clock
+    @EnvironmentObject private var personalities: PersonalityStore
     @Binding var message: PersonalityMessage?
     @State private var importing = false
     @State private var exporting = false
 
     private var choice: Binding<PersonalityChoice> {
         Binding(
-            get: { clock.customPersonalityID.map(PersonalityChoice.custom) ?? .builtIn(clock.personality) },
+            get: { personalities.customPersonalityID.map(PersonalityChoice.custom) ?? .builtIn(personalities.personality) },
             set: { new in
                 message = nil
                 switch new {
                 case let .builtIn(personality):
-                    clock.customPersonalityID = nil
-                    clock.personality = personality
+                    personalities.customPersonalityID = nil
+                    personalities.personality = personality
                 case let .custom(id):
-                    clock.customPersonalityID = id
+                    personalities.customPersonalityID = id
                 }
             }
         )
@@ -33,22 +33,22 @@ struct PersonalitySection: View {
     /// The active personality as a file to start from. Spoken and Vague have
     /// no slot table, so they hand out Classic's instead.
     private var template: CustomPersonality {
-        clock.activeCustom ?? clock.personality.template ?? Personality.classic.template!
+        personalities.activeCustom ?? personalities.personality.template ?? Personality.classic.template!
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Picker("Personality", selection: choice) {
                 ForEach(Personality.allCases) { Text($0.title).tag(PersonalityChoice.builtIn($0)) }
-                if !clock.customPersonalities.isEmpty {
+                if !personalities.customPersonalities.isEmpty {
                     Divider()
-                    ForEach(clock.customPersonalities) { Text($0.name).tag(PersonalityChoice.custom($0.id)) }
+                    ForEach(personalities.customPersonalities) { Text($0.name).tag(PersonalityChoice.custom($0.id)) }
                 }
             }
-            Text(clock.activeCustom == nil ? clock.personality.note : "Your own, imported from a file.")
+            Text(personalities.activeCustom == nil ? personalities.personality.note : "Your own, imported from a file.")
                 .font(.caption).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(clock.phrase(hour: 20, minute: 40))
+            Text(personalities.phrase(hour: 20, minute: 40))
                 .font(.callout.monospaced())
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(8)
@@ -58,9 +58,9 @@ struct PersonalitySection: View {
                 Button("Import…") { importing = true }
                 Button("Save as Template…") { exporting = true }
                 Spacer(minLength: 0)
-                if let custom = clock.activeCustom {
+                if let custom = personalities.activeCustom {
                     Button("Remove") {
-                        clock.removePersonality(id: custom.id)
+                        personalities.removePersonality(id: custom.id)
                         message = PersonalityMessage(text: "Removed \(custom.name).")
                     }
                 }
@@ -75,7 +75,7 @@ struct PersonalitySection: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .fileImporter(isPresented: $importing, allowedContentTypes: [CustomPersonality.contentType, .plainText]) { result in
             switch result {
-            case let .success(url): message = clock.importPersonality(from: url)
+            case let .success(url): message = personalities.importPersonality(from: url)
             case let .failure(error): message = PersonalityMessage(text: error.localizedDescription, isError: true)
             }
         }
