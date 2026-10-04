@@ -22,7 +22,7 @@ ctx.setFillColor(NSColor.black.cgColor)
 ctx.fillPath()
 ctx.restoreGState()
 
-// Background gradient (deep indigo -> violet)
+// Background gradient: violet at the top left to deep indigo
 ctx.saveGState()
 ctx.addPath(CGPath(roundedRect: body, cornerWidth: radius, cornerHeight: radius, transform: nil))
 ctx.clip()

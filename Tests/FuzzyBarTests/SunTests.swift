@@ -134,9 +134,7 @@ final class SunTests: XCTestCase {
 
     @MainActor
     func testSettingsPersistAndChooseTheLocation() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         let ny = TimeZone(identifier: "America/New_York")!
 
         let settings = SunSettings(defaults: defaults)

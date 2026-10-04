@@ -1,23 +1,15 @@
 import Foundation
 
 /// Converts a clock time into a fuzzy phrase like "twenty to nine".
-/// Minutes are rounded to the nearest five (37 -> 35, 38 -> 40).
-/// The default "spoken" personality is FuzzyBar's own; the rest come from
-/// LittleFuzzyClock and share its twelve-slot table (see `Personality`).
+/// Spoken, FuzzyBar's own, rounds to the nearest five minutes (37 -> 35,
+/// 38 -> 40) and turns to the next hour at :58. Vague names the part of the
+/// day. The LittleFuzzyClock personalities run on the same twelve-slot
+/// engine as imported ones (`CustomPersonality.phrase`).
 enum FuzzyTime {
-    private static let hourWords = [
-        "twelve", "one", "two", "three", "four", "five",
-        "six", "seven", "eight", "nine", "ten", "eleven",
-    ]
-
     static func phrase(hour: Int, minute: Int, personality: Personality = .default) -> String {
         if personality == .vague { return vaguePhrase(hour: hour, minute: minute) }
-        guard let slots = personality.slotPhrases else { return spokenPhrase(hour: hour, minute: minute) }
-        // Cap at 11 so minutes 57-59 read "almost [next hour]" rather than
-        // wrapping back to "just after [current hour]".
-        let slot = min(Int((Double(minute) / 5.0).rounded()), 11)
-        let displayHour = slot < personality.hourAdvanceSlot ? hour : (hour + 1) % 24
-        return slots[slot] + personality.joiner + personality.hourText(displayHour: displayHour)
+        guard let table = personality.template else { return spokenPhrase(hour: hour, minute: minute) }
+        return table.phrase(hour: hour, minute: minute)
     }
 
     /// No rounding: the parts of the day start on the exact minute.
@@ -32,8 +24,8 @@ enum FuzzyTime {
         if slot == 12 { slot = 0; h += 1 }
 
         // Anything past the half hour references the *next* hour.
-        let hourWord = hourWords[h % 12]
-        let nextHourWord = hourWords[(h + 1) % 12]
+        let hourWord = Personality.englishHours[h % 12]
+        let nextHourWord = Personality.englishHours[(h + 1) % 12]
 
         switch slot {
         case 0: return "\(hourWord) o'clock"

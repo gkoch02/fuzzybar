@@ -16,26 +16,18 @@ kept, where the icons are), one PNG per personality plus personalities.png
 with all of them stacked on a transparent ground. The README embeds the
 stack; plumpbug.dev's FuzzyBar page copies the singles.
 
-Every phrase is lifted from the listing copy already through review (the
-subtitle, the promotional text, the description). Nothing is written fresh
-for an image. Edit captions here and nowhere else.
+Captions reuse the App Store listing copy (subtitle, promotional text,
+description). Edit them here and nowhere else.
 
-The raws are one sitting: the first seven personalities shot at 8:44 am on
-2026-09-19, with the other menubar items hidden, so every strip reads the
-same moment and differs only in the phrase. Reshooting one alone will show,
-because the phrase changes with the clock; retake the set together, and
-crop each to the right 880 px of the bar. Vague came later (3:50 pm on
-2026-09-22, "afternoon"); it names no hour, so its strip sits with the
-others without contradicting them.
+The menubar raws were shot in one sitting with the other menubar items
+hidden, so the strips differ only in the phrase. The phrase changes with
+the clock, so retake the set together rather than one alone, and crop
+each to the right 880 px of the bar.
 
 The raw's pixel scale is read from menubar-spoken.png: a 1x capture of that
 strip is under 600 px wide, a Retina one is over. At 1x the canvas is the
-store's smallest size, 1280 x 800, and captures are placed at 1x (menubar
-crops at 2x, since a 360 px strip is otherwise a sliver). At 2x the canvas
-is 2560 x 1600 and everything scales with it, which is the set to ship.
-
-Lineage: Nightdraft's Tools/make_screenshots.py, itself from HippoChomp and
-Between Us, with the panel voice swapped for this app's. Needs Pillow.
+store's smallest size, 1280 x 800; at 2x it is 2560 x 1600 and everything
+scales with it, which is the set to ship. Needs Pillow.
 """
 
 import sys
@@ -50,7 +42,7 @@ OUT = SHOTS / "captioned"
 # San Francisco, as macOS ships it: the app's own face.
 SF = "/System/Library/Fonts/SFNS.ttf"
 
-# The icon's gradient (make_icon.swift): deep indigo to violet.
+# The icon's deep indigo (make_icon.swift), darkening to the bottom.
 GROUND = ((0x2A, 0x22, 0x8C), (0x1A, 0x14, 0x5E))
 EYEBROW = (0xC9, 0xC3, 0xF5)
 HEADLINE = (0xFF, 0xFF, 0xFF)
@@ -60,12 +52,14 @@ HEADLINE = (0xFF, 0xFF, 0xFF)
 # 1, shrunk only if the capture would not fit under the caption. A third
 # element crops the raw to that many points from the top before placing,
 # so menubar strips shot with different amounts of wallpaper line up. The
-# current raws are the bar and nothing else, so that crop is 33 throughout;
-# asking for more than the raw holds pads it black rather than erroring.
+# raws are 33 points tall: 01-menubar keeps all of it, while the stacked
+# frame and the strips crop to 32. Asking for more than the raw holds pads
+# it with transparency rather than erroring.
 # `uniform=True` crops every shot to the widest one's width, keeping the right
 # edge (where the menubar icons are) and extending a narrower capture's left
 # edge from its own first column, so strips of different widths come out
-# identical. `grid` lays several out in columns.
+# identical. `grid` lays several out in columns, and `align="right"` sets
+# a row against the right edge.
 # Window captures taken with ⇧⌘4 then Space carry their own shadow and
 # transparent margins; list those in PLAIN so they are placed untouched.
 FRAMES = {

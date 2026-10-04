@@ -66,9 +66,7 @@ final class SpecialTimesTests: XCTestCase {
 
     @MainActor
     func testClockPersistsSpecialTimesAndWakesForThem() {
-        let suite = "FuzzyBarTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+        let defaults = scratchDefaults()
         // Clock phrases in the current calendar, so build the date there too.
         let now = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 22, hour: 9, minute: 18))!
         let clock = Clock(dateProvider: { now }, defaults: defaults)

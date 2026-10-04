@@ -8,7 +8,7 @@ name: Pirate
 format: {phrase} {hour}, arr
 
 # The minute from which the hour named is the next one: at :35,
-# 8:35 is "twenty-five to nine".
+# 8:35 names nine, not eight.
 next hour from: :35
 
 # What the minutes say. Each line covers the five minutes around it,

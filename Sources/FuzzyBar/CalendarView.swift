@@ -72,7 +72,6 @@ struct CalendarView: View {
         return Array(short[first...] + short[..<first]).map { String($0.prefix(3)) }
     }
 
-    /// Six rows of seven days, starting from the first weekday on/before the 1st.
     private var weeks: [[Date]] {
         CalendarGrid.weeks(containing: shownMonth, calendar: cal)
     }

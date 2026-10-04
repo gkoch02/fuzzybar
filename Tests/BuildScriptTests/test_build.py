@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 
+@unittest.skipUnless(Path("/bin/zsh").exists(), "build.sh is a zsh script")
 class BuildScriptTests(unittest.TestCase):
     def run_build(self, fail):
         with tempfile.TemporaryDirectory(prefix="fuzzybar-build-test-") as directory:
@@ -57,6 +58,7 @@ class BuildScriptTests(unittest.TestCase):
         self.run_build(fail=False)
 
 
+@unittest.skipUnless(shutil.which("plutil"), "needs macOS plutil")
 class XcodeProjectTests(unittest.TestCase):
     """FuzzyBar.xcodeproj lists source files explicitly. It is generated from
     project.yml by `xcodegen generate` and committed, so a Swift file added
