@@ -16,9 +16,8 @@
 #   configuration, so the upload is the one that was bumped;
 # - a dSYM for every binary, marked optimised: the compiler writes
 #   DW_AT_APPLE_optimized into the debug info of code built with -O, and
-#   Debug's -Onone code has none (measured on a Release archive, 21,932 marks,
-#   against a Debug build of the same app, 0). Debug's default debug format
-#   makes no dSYM at all, which fails the same check;
+#   Debug's -Onone code has none. Debug's default debug format makes no
+#   dSYM at all, which fails the same check;
 # - no .debug.dylib, which a Debug build ships its code in.
 #
 # Nothing here reads the app's own code, so it is the same script in every
