@@ -128,7 +128,7 @@ until 5, then *early*, *morning* from 7, *around noon* from 11:30, *after
 lunch* from 1, *afternoon* from 3, *evening* from 6, and *late* from 9.
 
 The six ported personalities share LittleFuzzyClock's twelve-slot table, so
-minutes 58 and 59 stay on its last slot (Classic's "almost nine") rather than
+minutes 58 and 59 stay on its last slot (Classic's "almost nine pm") rather than
 turning to the hour the way the spoken default does. The phrase tables live in
 `Sources/FuzzyBar/Personality.swift`.
 

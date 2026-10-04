@@ -201,7 +201,7 @@ extension CustomPersonality {
             "# How the two halves go together in the menubar.",
             "format: \(format)",
             "",
-            "# The minute from which the hour named is the next one: at :35,",
+            "# The minute from which the hour named is the next one: with :35,",
             "# 8:35 names nine, not eight.",
             "next hour from: \(Self.minuteLabels[nextHourFrom])",
             "",

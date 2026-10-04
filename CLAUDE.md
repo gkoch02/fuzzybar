@@ -11,7 +11,8 @@
 - Reuse before copying: the slot-table personalities run on
   `CustomPersonality.phrase`, and tests get UserDefaults from
   `scratchDefaults()`.
-- Tests go in the file for the unit they test, one file per unit.
+- Tests go in the file for the unit or feature they test, not in a file per
+  review round.
 - A new or renamed Swift file needs `xcodegen generate`;
   `Tests/BuildScriptTests` checks the project matches the disk.
 - `Tools/check_archive.sh` is shared with other PlumpBug repos: change only its
