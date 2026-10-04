@@ -98,6 +98,7 @@ struct SpecialTimesSection: View {
 
     /// "3:14 PM" or "Mar 14, 3:14 PM", in the user's own time format.
     static func when(_ special: SpecialTime) -> String {
+        // Any leap year, so a February 29 one formats.
         let date = Calendar.current.date(from: DateComponents(year: 2024, month: special.month ?? 1,
                                                               day: special.day ?? 1, hour: special.hour,
                                                               minute: special.minute)) ?? Date()

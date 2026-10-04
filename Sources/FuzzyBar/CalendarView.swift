@@ -27,6 +27,9 @@ struct CalendarView: View {
                 }
             }
         }
+        // The popover keeps its views between openings; start each one on
+        // this month, as the system clock's calendar does.
+        .onAppear { shownMonth = today }
     }
 
     private var header: some View {

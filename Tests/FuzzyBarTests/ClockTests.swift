@@ -37,7 +37,7 @@ final class ClockTests: XCTestCase {
 
     @MainActor func testClockRefreshesOnOpeningAndExternalChanges() {
         var current = date("2024-01-01T08:00:00Z")
-        let clock = Clock(dateProvider: { current })
+        let clock = Clock(dateProvider: { current }, defaults: scratchDefaults())
         current = current.addingTimeInterval(90)
         clock.setPopoverVisible(true)
         XCTAssertEqual(clock.now, current)

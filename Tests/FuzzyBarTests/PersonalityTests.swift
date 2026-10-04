@@ -182,7 +182,7 @@ final class PersonalityTests: XCTestCase {
         let clock = Clock(dateProvider: { now }, defaults: defaults)
         XCTAssertEqual(clock.fuzzy, "ten o'clock")
 
-        clock.personality = .classic
+        clock.personalities.personality = .classic
         XCTAssertEqual(clock.fuzzy, "almost ten am")
         XCTAssertEqual(clock.timerFireDate, now.addingTimeInterval(120 + 0.05))
 
@@ -199,16 +199,15 @@ final class PersonalityTests: XCTestCase {
         let date = cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: 30))!
 
         let clock = Clock(dateProvider: { date }, defaults: defaults)
-        XCTAssertEqual(clock.personality, .spoken)
-        clock.personality = .missionControl
+        XCTAssertEqual(clock.personalities.personality, .spoken)
+        clock.personalities.personality = .missionControl
         XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "missionControl")
         XCTAssertEqual(clock.fuzzy, FuzzyTime.phrase(for: date, personality: .missionControl))
 
-        let reloaded = Clock(dateProvider: { date }, defaults: defaults)
-        XCTAssertEqual(reloaded.personality, .missionControl)
+        XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .missionControl)
 
         defaults.set("not-a-personality", forKey: Personality.defaultsKey)
-        XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
+        XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .spoken)
     }
 
     func testEightPersonalitiesShip() {
@@ -234,28 +233,25 @@ final class PersonalityTests: XCTestCase {
     }
 
     @MainActor
-    func testClockMigratesAndRewritesAPreRenameChoice() {
+    func testStoreMigratesAndRewritesAPreRenameChoice() {
         let defaults = scratchDefaults()
-        let date = Date()
 
         defaults.set("cthulhu", forKey: Personality.defaultsKey)
-        let clock = Clock(dateProvider: { date }, defaults: defaults)
-        XCTAssertEqual(clock.personality, .eldritch)
+        XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .eldritch)
         // Rewritten once, so the next launch reads it straight.
         XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "eldritch")
-        XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .eldritch)
+        XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .eldritch)
     }
 
     /// A withdrawn personality has nothing to migrate to, so the app falls
     /// back to Spoken and stops carrying a value it can no longer honour.
     @MainActor
-    func testClockFallsBackFromAWithdrawnChoice() {
+    func testStoreFallsBackFromAWithdrawnChoice() {
         let defaults = scratchDefaults()
-        let date = Date()
 
         for retired in ["klingon", "belter"] {
             defaults.set(retired, forKey: Personality.defaultsKey)
-            XCTAssertEqual(Clock(dateProvider: { date }, defaults: defaults).personality, .spoken)
+            XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .spoken)
             XCTAssertEqual(defaults.string(forKey: Personality.defaultsKey), "spoken")
         }
     }

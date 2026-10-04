@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FE1B247EAA9FD192FA453EE /* PersonalityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC9A4E73BC2D005522CFC069 /* PersonalityStore.swift */; };
 		1255F4D1A2A6A89660756514 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD1B0A344DA4BED8FCD91F0 /* ClockTests.swift */; };
 		23D6FBBD0677B291687CCAC3 /* CalendarGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8592B5A3456545DD3824B463 /* CalendarGridTests.swift */; };
 		24E09F039C92356B626E9062 /* SpecialTimesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F71DF1AA3F65646134B60B1 /* SpecialTimesSection.swift */; };
@@ -69,6 +70,7 @@
 		954874F52C1BE644E1FFDC5C /* SpecialTimesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialTimesTests.swift; sourceTree = "<group>"; };
 		AF7026A27B615A83F91733F9 /* LoginSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettingsTests.swift; sourceTree = "<group>"; };
 		CC5ECB80675A95420BF5DCFC /* PersonalitySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalitySection.swift; sourceTree = "<group>"; };
+		CC9A4E73BC2D005522CFC069 /* PersonalityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalityStore.swift; sourceTree = "<group>"; };
 		CCB683AFB1FFCFDC0C10E6A8 /* FuzzyTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyTime.swift; sourceTree = "<group>"; };
 		E7C103DB89839962539BB501 /* FuzzyBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FuzzyBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2D60058A591C7B6666A279 /* FuzzyBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FuzzyBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 				EE4571EC1D7726D3A62AFBF2 /* LoginSettings.swift */,
 				4A8391076FAEB2905D423F44 /* Personality.swift */,
 				CC5ECB80675A95420BF5DCFC /* PersonalitySection.swift */,
+				CC9A4E73BC2D005522CFC069 /* PersonalityStore.swift */,
 				518C89C64E34D69A91490977 /* SettingsView.swift */,
 				462A9B047B859DF5C0E0B215 /* SpecialTimes.swift */,
 				3F71DF1AA3F65646134B60B1 /* SpecialTimesSection.swift */,
@@ -266,6 +269,7 @@
 				766696F0C4C216DD80F57A14 /* LoginSettings.swift in Sources */,
 				BB649E8E1636670A4E253035 /* Personality.swift in Sources */,
 				8BC4E9EF2C3FA6BE65399166 /* PersonalitySection.swift in Sources */,
+				0FE1B247EAA9FD192FA453EE /* PersonalityStore.swift in Sources */,
 				64816686DAFB23425652BFAB /* SettingsView.swift in Sources */,
 				83BB5E8207E5BB58782F342C /* SpecialTimes.swift in Sources */,
 				24E09F039C92356B626E9062 /* SpecialTimesSection.swift in Sources */,

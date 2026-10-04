@@ -3,7 +3,7 @@ import ServiceManagement
 
 struct SettingsView: View {
     @StateObject private var login = LoginSettings()
-    @EnvironmentObject private var clock: Clock
+    @EnvironmentObject private var personalities: PersonalityStore
     @EnvironmentObject private var sun: SunSettings
     @State private var personalityMessage: PersonalityMessage?
 
@@ -71,7 +71,7 @@ struct SettingsView: View {
         .background(SettingsWindow.Reader())
         .dropDestination(for: URL.self) { urls, _ in
             guard let url = urls.first else { return false }
-            personalityMessage = clock.importPersonality(from: url)
+            personalityMessage = personalities.importPersonality(from: url)
             return true
         }
         .onAppear { login.refresh() }
