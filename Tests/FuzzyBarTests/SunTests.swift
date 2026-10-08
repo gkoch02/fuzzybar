@@ -2,18 +2,12 @@ import XCTest
 @testable import FuzzyBar
 
 final class SunTests: XCTestCase {
-    private func calendar(_ zone: String) -> Calendar {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: zone)!
-        return cal
-    }
-
     /// Asserts sunrise and sunset as local clock times in `zone`, within
     /// `accuracy` seconds.
     private func assertSun(_ zone: String, _ lat: Double, _ lon: Double, _ y: Int, _ mo: Int, _ d: Int,
                            rise: (Int, Int), set: (Int, Int), accuracy: TimeInterval = 90,
                            file: StaticString = #filePath, line: UInt = #line) {
-        let cal = calendar(zone)
+        let cal = gregorian(zone)
         let noon = cal.date(from: DateComponents(year: y, month: mo, day: d, hour: 12))!
         guard case let .risesAndSets(sunrise, sunset) = Sun.day(containing: noon, latitude: lat, longitude: lon, calendar: cal) else {
             return XCTFail("expected a sunrise and a sunset", file: file, line: line)
@@ -52,7 +46,7 @@ final class SunTests: XCTestCase {
     func testDateLineZonesGetTheirOwnDay() {
         for (zone, lat, lon) in [("Pacific/Chatham", -43.95, -176.55), ("Pacific/Kiritimati", 1.8667, -157.3333),
                                  ("Pacific/Apia", -13.8333, -171.7333), ("Pacific/Tongatapu", -21.1333, -175.2)] {
-            let cal = calendar(zone)
+            let cal = gregorian(zone)
             let noon = cal.date(from: DateComponents(year: 2026, month: 9, day: 26, hour: 12))!
             guard case let .risesAndSets(sunrise, sunset) = Sun.day(containing: noon, latitude: lat, longitude: lon, calendar: cal) else {
                 XCTFail(zone); continue
@@ -67,9 +61,8 @@ final class SunTests: XCTestCase {
     /// is centred on the day asked for, whatever the zone's offset.
     func testEveryZoneGetsTheDayItAskedFor() {
         for (zone, location) in ZoneLocations.table {
-            guard let tz = TimeZone(identifier: zone) else { continue }
-            var cal = Calendar(identifier: .gregorian)
-            cal.timeZone = tz
+            guard TimeZone(identifier: zone) != nil else { continue }
+            let cal = gregorian(zone)
             for (month, day) in [(3, 20), (6, 21), (9, 22), (12, 21)] {
                 let noon = cal.date(from: DateComponents(year: 2026, month: month, day: day, hour: 12))!
                 if case let .risesAndSets(sunrise, sunset) = Sun.day(containing: noon, latitude: location.latitude,
@@ -83,7 +76,7 @@ final class SunTests: XCTestCase {
     }
 
     func testPolarDayAndNight() {
-        let cal = calendar("Europe/Oslo")
+        let cal = gregorian("Europe/Oslo")
         func day(_ month: Int) -> Sun.Day {
             Sun.day(containing: cal.date(from: DateComponents(year: 2026, month: month, day: 21, hour: 12))!,
                     latitude: 69.6496, longitude: 18.9560, calendar: cal)  // Tromsø

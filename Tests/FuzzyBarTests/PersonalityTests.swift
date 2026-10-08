@@ -127,8 +127,7 @@ final class PersonalityTests: XCTestCase {
     /// next part and otherwise sleep in its usual five-minute steps.
     @MainActor
     func testVagueTicksAtPartBoundaries() {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
+        let cal = gregorian()
         func at(_ hour: Int, _ minute: Int) -> Date {
             cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: hour, minute: minute))!
         }
@@ -194,8 +193,7 @@ final class PersonalityTests: XCTestCase {
     @MainActor
     func testClockPersistsPersonalityAndRephrases() {
         let defaults = scratchDefaults()
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
+        let cal = gregorian()
         let date = cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: 30))!
 
         let clock = Clock(dateProvider: { date }, defaults: defaults)
@@ -217,10 +215,6 @@ final class PersonalityTests: XCTestCase {
                         "missionControl", "eldritch", "latin", "vague"])
     }
 
-    /// Two personalities were renamed off their franchise labels before the
-    /// App Store submission and two were withdrawn. A preference written by
-    /// an older build still holds the old raw value, and reading it must not
-    /// crash or leave the app on a personality that no longer exists.
     func testPreRenameValuesMigrateAndWithdrawnOnesFallBack() {
         XCTAssertEqual(Personality.stored("hal"), .missionControl)
         XCTAssertEqual(Personality.stored("cthulhu"), .eldritch)
@@ -243,8 +237,6 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(PersonalityStore(defaults: defaults).personality, .eldritch)
     }
 
-    /// A withdrawn personality has nothing to migrate to, so the app falls
-    /// back to Spoken and stops carrying a value it can no longer honour.
     @MainActor
     func testStoreFallsBackFromAWithdrawnChoice() {
         let defaults = scratchDefaults()
@@ -261,8 +253,7 @@ final class PersonalityTests: XCTestCase {
     /// 9:58, the others hold "almost ten" until 10:00.
     @MainActor
     func testTickFollowsTheActivePersonality() {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
+        let cal = gregorian()
         func at(_ minute: Int) -> Date {
             cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: minute))!
         }

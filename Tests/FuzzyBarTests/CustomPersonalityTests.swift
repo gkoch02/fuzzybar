@@ -212,8 +212,7 @@ final class CustomPersonalityTests: XCTestCase {
     /// and the ticker follows the custom one's boundaries.
     @MainActor
     func testSpecialTimesWinAndTheTickerFollowsTheCustomOne() throws {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
+        let cal = gregorian()
         func at(_ y: Int, _ mo: Int, _ d: Int, _ h: Int, _ m: Int) -> Date {
             cal.date(from: DateComponents(year: y, month: mo, day: d, hour: h, minute: m))!
         }
