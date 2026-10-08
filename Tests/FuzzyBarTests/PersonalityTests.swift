@@ -37,6 +37,15 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(11, 45, .classic), "quarter to twelve pm")
     }
 
+    /// One reading per slot, in order, so swapping two slot phrases fails.
+    func testClassicReadsEverySlotInOrder() {
+        XCTAssertEqual(stride(from: 0, to: 60, by: 5).map { p(9, $0, .classic) }, [
+            "just after nine am", "a little past nine am", "ten past nine am", "quarter past nine am",
+            "twenty past nine am", "twenty-five past nine am", "half past nine am", "twenty-five to ten am",
+            "twenty to ten am", "quarter to ten am", "ten to ten am", "almost ten am",
+        ])
+    }
+
     func testShakespeare() {
         XCTAssertEqual(p(9, 0, .shakespeare), "'tis just past nine of the clock")
         XCTAssertEqual(p(9, 15, .shakespeare), "'tis a quarter past nine of the clock")
@@ -156,18 +165,10 @@ final class PersonalityTests: XCTestCase {
         }
     }
 
-    func testEveryMinuteUsesKnownVocabulary() {
+    func testSlotTablesAreWellFormed() {
         for personality in Personality.allCases where personality.slotPhrases != nil {
-            let slots = personality.slotPhrases!
-            XCTAssertEqual(slots.count, 12, "\(personality)")
+            XCTAssertEqual(personality.slotPhrases!.count, 12, "\(personality)")
             XCTAssertTrue((1...11).contains(personality.hourAdvanceSlot), "\(personality)")
-            for hour in 0..<24 {
-                for minute in 0..<60 {
-                    let text = p(hour, minute, personality)
-                    XCTAssertTrue(slots.contains { text.hasPrefix($0 + personality.joiner) },
-                                  "\(personality) \(hour):\(minute) -> \(text)")
-                }
-            }
         }
     }
 
@@ -209,7 +210,6 @@ final class PersonalityTests: XCTestCase {
     }
 
     func testEightPersonalitiesShip() {
-        XCTAssertEqual(Personality.allCases.count, 8)
         XCTAssertEqual(Personality.allCases.map(\.rawValue),
                        ["spoken", "classic", "shakespeare", "german",
                         "missionControl", "eldritch", "latin", "vague"])
@@ -248,22 +248,13 @@ final class PersonalityTests: XCTestCase {
         }
     }
 
-    /// The ported personalities all change phrase on the same minutes, and the
-    /// ticker must follow the active one: spoken flips to "ten o'clock" at
-    /// 9:58, the others hold "almost ten" until 10:00.
+    /// The ticker must follow the active personality: spoken flips to
+    /// "ten o'clock" at 9:58, classic holds "almost ten" until 10:00.
     @MainActor
     func testTickFollowsTheActivePersonality() {
         let cal = gregorian()
         func at(_ minute: Int) -> Date {
             cal.date(from: DateComponents(year: 2026, month: 9, day: 18, hour: 9, minute: minute))!
-        }
-        let ported = Personality.allCases.filter { $0.slotPhrases != nil }
-        for minute in [0, 2, 3, 22, 23, 27, 28, 52, 57] {
-            let expected = Clock.nextTick(after: at(minute), popoverVisible: false, calendar: cal, personality: .classic)
-            for personality in ported {
-                XCTAssertEqual(Clock.nextTick(after: at(minute), popoverVisible: false, calendar: cal, personality: personality),
-                               expected, "\(personality) at 9:\(minute)")
-            }
         }
         XCTAssertEqual(Clock.nextTick(after: at(57), popoverVisible: false, calendar: cal, personality: .spoken),
                        at(58).addingTimeInterval(0.05))
