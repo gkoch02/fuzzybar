@@ -2,11 +2,7 @@ import XCTest
 @testable import FuzzyBar
 
 final class SpecialTimesTests: XCTestCase {
-    private var cal: Calendar = {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "America/New_York")!
-        return cal
-    }()
+    private let cal = gregorian("America/New_York")
 
     private func at(_ y: Int, _ mo: Int, _ d: Int, _ h: Int, _ m: Int, _ s: Int = 0) -> Date {
         cal.date(from: DateComponents(year: y, month: mo, day: d, hour: h, minute: m, second: s))!

@@ -58,8 +58,7 @@ HEADLINE = (0xFF, 0xFF, 0xFF)
 # `uniform=True` crops every shot to the widest one's width, keeping the right
 # edge (where the menubar icons are) and extending a narrower capture's left
 # edge from its own first column, so strips of different widths come out
-# identical. `grid` lays several out in columns, and `align="right"` sets
-# a row against the right edge.
+# identical. Several shots stack in a centred column.
 # Window captures taken with ⇧⌘4 then Space carry their own shadow and
 # transparent margins; list those in PLAIN so they are placed untouched.
 FRAMES = {
@@ -94,9 +93,7 @@ FRAMES = {
 PLAIN = {"settings.png"}
 
 # The menubar captures, in the order Personality.allCases declares them.
-STRIPS = ["menubar-spoken.png", "menubar-classic.png", "menubar-shakespeare.png",
-          "menubar-german.png", "menubar-missioncontrol.png", "menubar-eldritch.png",
-          "menubar-latin.png", "menubar-vague.png"]
+STRIPS = [shot[0] for shot in FRAMES["03-personalities"]["shots"]]
 
 
 def raw_scale():
@@ -229,23 +226,17 @@ def render(name, spec, s):
     shots = [place(shot[0], im, shot[1], s, avail) for shot, im in zip(spec["shots"], raws)]
     plain = [im for im, shot in zip(shots, spec["shots"]) if shot[0] in PLAIN]
     gap = 28 * s
-    cols = spec.get("grid", 1)
-    rows = [shots[i:i + cols] for i in range(0, len(shots), cols)]
-    block_h = sum(max(im.height for im in row) for row in rows) + gap * (len(rows) - 1)
+    block_h = sum(im.height for im in shots) + gap * (len(shots) - 1)
     if block_h > avail:  # never crop; a frame that does not fit is a spec error
         raise SystemExit(f"{name}: captures need {block_h}px, only {avail}px below the caption")
     y = top + (avail - block_h) // 2
-    right_edge = (W + max(im.width for im in shots)) // 2
-    for row in rows:
-        row_w = sum(im.width for im in row) + gap * (len(row) - 1)
-        x = right_edge - row_w if spec.get("align") == "right" else (W - row_w) // 2
-        for im in row:
-            if any(im is p for p in plain):
-                img.alpha_composite(im, (x, y))
-            else:
-                shadowed(img, im, (x, y), blur=8 * s, alpha=110)
-            x += im.width + gap
-        y += max(im.height for im in row) + gap
+    for im in shots:
+        x = (W - im.width) // 2
+        if any(im is p for p in plain):
+            img.alpha_composite(im, (x, y))
+        else:
+            shadowed(img, im, (x, y), blur=8 * s, alpha=110)
+        y += im.height + gap
 
     OUT.mkdir(exist_ok=True)
     img.convert("RGB").save(OUT / f"{name}.png", optimize=True)

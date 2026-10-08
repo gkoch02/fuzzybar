@@ -16,8 +16,8 @@ $0.99, a signed universal build the store installs and keeps updated, or build i
 yourself for free from this repository (below). It's the same app either way.
 
 FuzzyBar exists because the fuzzy clock I'd used for years stopped getting
-updates and still ran under Rosetta. This one is under 1,500 lines of Swift
-(not counting a generated time zone table), builds natively for Apple Silicon, and has no dependencies.
+updates and still ran under Rosetta. This one is a small amount of Swift,
+builds natively for Apple Silicon, and has no dependencies.
 
 ## Features
 
@@ -137,8 +137,7 @@ swift test
 python3 -m unittest discover -s Tests/BuildScriptTests
 ```
 
-Tests cover all daily phrase boundaries in every personality, calendar grids, clock scheduling, login
-approval states, and build-script failure handling. The build-script tests need macOS and skip elsewhere.
+The build-script tests need macOS and skip elsewhere.
 
 ## Your own personalities
 

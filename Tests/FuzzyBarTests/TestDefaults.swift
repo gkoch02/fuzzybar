@@ -8,3 +8,12 @@ extension XCTestCase {
         return UserDefaults(suiteName: suite)!
     }
 }
+
+/// A Gregorian calendar in `zone`, so a test's dates don't depend on the Mac's.
+func gregorian(_ zone: String = "UTC") -> Calendar {
+    var cal = Calendar(identifier: .gregorian)
+    cal.timeZone = TimeZone(identifier: zone)!
+    return cal
+}
+
+func iso(_ text: String) -> Date { ISO8601DateFormatter().date(from: text)! }

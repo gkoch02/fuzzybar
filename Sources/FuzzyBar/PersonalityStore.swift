@@ -30,8 +30,7 @@ final class PersonalityStore: ObservableObject {
     }
     static let customListKey = "customPersonalities"
     static let customActiveKey = "customPersonality"
-    /// Called after any change, once the new value is in place. `Clock` uses
-    /// it to reschedule, since phrase boundaries differ between personalities.
+    /// Called after any change, once the new value is in place.
     var onChange: (() -> Void)?
     private let defaults: UserDefaults
 
@@ -64,7 +63,6 @@ final class PersonalityStore: ObservableObject {
     /// Adds an imported personality and switches to it. One with the same
     /// name as an existing one replaces it, keeping its place, so editing a
     /// file and importing it again updates it. Returns whether it replaced.
-    @discardableResult
     func importPersonality(_ imported: CustomPersonality) -> Bool {
         var incoming = imported
         if let i = customPersonalities.firstIndex(where: { $0.name.caseInsensitiveCompare(imported.name) == .orderedSame }) {
