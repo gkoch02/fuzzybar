@@ -37,6 +37,15 @@ final class PersonalityTests: XCTestCase {
         XCTAssertEqual(p(11, 45, .classic), "quarter to twelve pm")
     }
 
+    /// One reading per slot, in order, so swapping two slot phrases fails.
+    func testClassicReadsEverySlotInOrder() {
+        XCTAssertEqual(stride(from: 0, to: 60, by: 5).map { p(9, $0, .classic) }, [
+            "just after nine am", "a little past nine am", "ten past nine am", "quarter past nine am",
+            "twenty past nine am", "twenty-five past nine am", "half past nine am", "twenty-five to ten am",
+            "twenty to ten am", "quarter to ten am", "ten to ten am", "almost ten am",
+        ])
+    }
+
     func testShakespeare() {
         XCTAssertEqual(p(9, 0, .shakespeare), "'tis just past nine of the clock")
         XCTAssertEqual(p(9, 15, .shakespeare), "'tis a quarter past nine of the clock")
